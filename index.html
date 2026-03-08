@@ -1,286 +1,73 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-
-<title>Lotto Viewer</title>
-
-<style>
-
-body{
-font-family:sans-serif;
-text-align:center;
-background:#f5f5f5;
-padding:20px;
-}
-
-h1{
-font-size:24px;
-}
-
-.ball{
-display:inline-block;
-width:42px;
-height:42px;
-line-height:42px;
-border-radius:50%;
-margin:4px;
-font-weight:bold;
-color:white;
-}
-
-.n1{background:#fbc400;}
-.n2{background:#69c8f2;}
-.n3{background:#ff7272;}
-.n4{background:#aaaaaa;}
-.n5{background:#b0d840;}
-
-input{
-width:40px;
-font-size:16px;
-text-align:center;
-}
-
-button{
-padding:10px 20px;
-margin:10px;
-font-size:16px;
-}
-
-#stats{
-margin-top:20px;
-font-size:14px;
-}
-
-</style>
-
+<title>로또 조회 테스트</title>
 </head>
 
 <body>
 
-<h1>최신 로또 당첨번호</h1>
+<h2>로또 최신 번호</h2>
 
-<div id="round"></div>
-<div id="numbers"></div>
-
-<button onclick="loadLatest()">조회</button>
-
-<hr>
-
-<h2>내 번호 확인</h2>
-
-<div id="myNumbers">
-<input type="number" min="1" max="45">
-<input type="number" min="1" max="45">
-<input type="number" min="1" max="45">
-<input type="number" min="1" max="45">
-<input type="number" min="1" max="45">
-<input type="number" min="1" max="45">
-</div>
-
-<button onclick="checkResult()">당첨 확인</button>
+<button onclick="load()">조회</button>
 
 <div id="result"></div>
 
-<hr>
-
-<h2>최근 10회 통계</h2>
-<div id="stats"></div>
-
 <script>
 
-let latestData=null
-
-function ballColor(n){
-
-if(n<=10) return "n1"
-if(n<=20) return "n2"
-if(n<=30) return "n3"
-if(n<=40) return "n4"
-return "n5"
-
-}
-
 function estimateRound(){
-
 const start=new Date("2002-12-07")
 const now=new Date()
-
 const diff=now-start
-
 return Math.floor(diff/(1000*60*60*24*7))
-
 }
 
 async function fetchRound(round){
 
 const url=`https://www.dhlottery.co.kr/common.do?method=getLottoNumber&drwNo=${round}`
 
-const proxy="https://api.allorigins.win/get?url="+encodeURIComponent(url)
+const proxy=`https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`
 
 const res=await fetch(proxy)
+
 const data=await res.json()
 
-const lotto=JSON.parse(data.contents)
+if(data.returnValue!="success") return null
 
-if(lotto.returnValue!=="success") return null
-
-return lotto
+return data
 
 }
 
-async function loadLatest(){
+async function load(){
 
 let round=estimateRound()
 
-for(let i=0;i<10;i++){
+for(let i=0;i<5;i++){
 
 let data=await fetchRound(round)
 
 if(data){
 
-latestData=data
-
-renderNumbers(data)
-
-loadStats(round)
+document.getElementById("result").innerHTML=
+`${data.drwNo}회<br>
+${data.drwtNo1},
+${data.drwtNo2},
+${data.drwtNo3},
+${data.drwtNo4},
+${data.drwtNo5},
+${data.drwtNo6}
++ ${data.bnusNo}`
 
 return
-
 }
 
 round--
-
 }
 
-}
-
-function renderNumbers(data){
-
-document.getElementById("round").innerText=
-`${data.drwNo}회 (${data.drwNoDate})`
-
-const nums=[
-data.drwtNo1,
-data.drwtNo2,
-data.drwtNo3,
-data.drwtNo4,
-data.drwtNo5,
-data.drwtNo6
-]
-
-let html=""
-
-nums.forEach(n=>{
-html+=`<span class="ball ${ballColor(n)}">${n}</span>`
-})
-
-html+=` + <span class="ball ${ballColor(data.bnusNo)}">${data.bnusNo}</span>`
-
-document.getElementById("numbers").innerHTML=html
+document.getElementById("result").innerText="조회 실패"
 
 }
-
-function checkResult(){
-
-if(!latestData)return
-
-const inputs=document.querySelectorAll("#myNumbers input")
-
-let my=[]
-
-inputs.forEach(i=>{
-if(i.value) my.push(parseInt(i.value))
-})
-
-const win=[
-latestData.drwtNo1,
-latestData.drwtNo2,
-latestData.drwtNo3,
-latestData.drwtNo4,
-latestData.drwtNo5,
-latestData.drwtNo6
-]
-
-let match=my.filter(n=>win.includes(n)).length
-
-let bonus=(my.includes(latestData.bnusNo))
-
-let result="꽝"
-
-if(match==6) result="1등"
-else if(match==5 && bonus) result="2등"
-else if(match==5) result="3등"
-else if(match==4) result="4등"
-else if(match==3) result="5등"
-
-document.getElementById("result").innerText=
-`${match}개 일치 → ${result}`
-
-}
-
-async function loadStats(startRound){
-
-let freq=Array(46).fill(0)
-
-for(let i=0;i<10;i++){
-
-let d=await fetchRound(startRound-i)
-
-if(!d)continue
-
-let arr=[
-d.drwtNo1,
-d.drwtNo2,
-d.drwtNo3,
-d.drwtNo4,
-d.drwtNo5,
-d.drwtNo6
-]
-
-arr.forEach(n=>freq[n]++)
-
-}
-
-let stats=""
-
-for(let i=1;i<=45;i++){
-
-if(freq[i]>0){
-
-stats+=`${i} : ${freq[i]}회<br>`
-
-}
-
-}
-
-document.getElementById("stats").innerHTML=stats
-
-}
-
-function autoRefresh(){
-
-const now=new Date()
-
-const day=now.getDay()
-
-const hour=now.getHours()
-
-const min=now.getMinutes()
-
-if(day==6 && hour==20 && min>=45){
-
-loadLatest()
-
-}
-
-}
-
-setInterval(autoRefresh,60000)
-
-loadLatest()
 
 </script>
 
