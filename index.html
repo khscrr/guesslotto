@@ -2,66 +2,220 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>로또 조회</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lotto Viewer</title>
+
+<style>
+
+body{
+font-family: Arial;
+text-align:center;
+background:#f4f4f4;
+padding:20px;
+}
+
+h1{
+font-size:24px;
+}
+
+.ball{
+display:inline-block;
+width:42px;
+height:42px;
+line-height:42px;
+border-radius:50%;
+margin:5px;
+font-weight:bold;
+color:white;
+}
+
+.c1{background:#fbc400}
+.c2{background:#69c8f2}
+.c3{background:#ff7272}
+.c4{background:#aaa}
+.c5{background:#b0d840}
+
+button{
+padding:10px 20px;
+font-size:16px;
+margin:10px;
+}
+
+input{
+width:40px;
+text-align:center;
+font-size:16px;
+}
+
+</style>
+
 </head>
 
 <body>
 
-<h2>최신 로또 조회</h2>
+<h1>로또 조회</h1>
 
-<button onclick="loadLotto()">조회</button>
+<button onclick="loadLatest()">최신 번호 조회</button>
+
+<div id="round"></div>
+<div id="numbers"></div>
+
+<hr>
+
+<h2>내 번호 확인</h2>
+
+<div id="myNumbers">
+<input type="number" min="1" max="45">
+<input type="number" min="1" max="45">
+<input type="number" min="1" max="45">
+<input type="number" min="1" max="45">
+<input type="number" min="1" max="45">
+<input type="number" min="1" max="45">
+</div>
+
+<button onclick="checkResult()">당첨 확인</button>
 
 <div id="result"></div>
 
 <script>
 
+let latestData=null
+
+function colorClass(n){
+
+if(n<=10) return "c1"
+if(n<=20) return "c2"
+if(n<=30) return "c3"
+if(n<=40) return "c4"
+return "c5"
+
+}
+
 function estimateRound(){
-    const start = new Date("2002-12-07")
-    const now = new Date()
-    const diff = now - start
-    return Math.floor(diff / (1000*60*60*24*7))
+
+const start=new Date("2002-12-07")
+const now=new Date()
+
+const diff=now-start
+
+return Math.floor(diff/(1000*60*60*24*7))
+
 }
 
-function loadLotto(){
+async function fetchRound(round){
 
-    document.getElementById("result").innerText="조회중..."
+const api=
+`https://www.dhlottery.co.kr/common.do?method=getLottoNumber&drwNo=${round}`
 
-    let round = estimateRound()
+const url=
+`https://corsproxy.io/?${encodeURIComponent(api)}`
 
-    tryRound(round)
+const res=await fetch(url)
+
+const data=await res.json()
+
+if(data.returnValue!=="success") return null
+
+return data
+
 }
 
-function tryRound(round){
+async function loadLatest(){
 
-    const script=document.createElement("script")
+document.getElementById("round").innerText="조회중..."
 
-    script.src=
-    "https://www.dhlottery.co.kr/common.do?method=getLottoNumber&drwNo="+round
+let round=estimateRound()
 
-    script.onload=function(){
+for(let i=0;i<15;i++){
 
-        if(returnValue==="success"){
+let data=await fetchRound(round)
 
-            document.getElementById("result").innerHTML=
-            drwNo+"회 ("+drwNoDate+")<br>"+
-            drwtNo1+", "+
-            drwtNo2+", "+
-            drwtNo3+", "+
-            drwtNo4+", "+
-            drwtNo5+", "+
-            drwtNo6+
-            " + "+bnusNo
+if(data){
 
-        }else{
+latestData=data
 
-            tryRound(round-1)
+renderNumbers(data)
 
-        }
+return
+}
 
-    }
+round--
 
-    document.body.appendChild(script)
+}
+
+document.getElementById("round").innerText="조회 실패"
+
+}
+
+function renderNumbers(data){
+
+document.getElementById("round").innerText=
+`${data.drwNo}회 (${data.drwNoDate})`
+
+const nums=[
+data.drwtNo1,
+data.drwtNo2,
+data.drwtNo3,
+data.drwtNo4,
+data.drwtNo5,
+data.drwtNo6
+]
+
+let html=""
+
+nums.forEach(n=>{
+html+=`<span class="ball ${colorClass(n)}">${n}</span>`
+})
+
+html+=` + <span class="ball ${colorClass(data.bnusNo)}">${data.bnusNo}</span>`
+
+document.getElementById("numbers").innerHTML=html
+
+}
+
+function checkResult(){
+
+if(!latestData){
+
+document.getElementById("result").innerText="먼저 조회하세요"
+
+return
+}
+
+const inputs=document.querySelectorAll("#myNumbers input")
+
+let my=[]
+
+inputs.forEach(i=>{
+
+if(i.value) my.push(parseInt(i.value))
+
+})
+
+const win=[
+latestData.drwtNo1,
+latestData.drwtNo2,
+latestData.drwtNo3,
+latestData.drwtNo4,
+latestData.drwtNo5,
+latestData.drwtNo6
+]
+
+let match=my.filter(n=>win.includes(n)).length
+
+let bonus=my.includes(latestData.bnusNo)
+
+let rank="꽝"
+
+if(match==6) rank="1등"
+else if(match==5 && bonus) rank="2등"
+else if(match==5) rank="3등"
+else if(match==4) rank="4등"
+else if(match==3) rank="5등"
+
+document.getElementById("result").innerText=
+`${match}개 일치 → ${rank}`
+
 }
 
 </script>
