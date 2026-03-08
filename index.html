@@ -2,13 +2,13 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>로또 조회 테스트</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>로또 조회</title>
 </head>
 
 <body>
 
-<h2>로또 조회</h2>
+<h2>최신 로또 조회</h2>
 
 <button onclick="loadLotto()">조회</button>
 
@@ -17,58 +17,51 @@
 <script>
 
 function estimateRound(){
-    const start = new Date("2002-12-07");
-    const now = new Date();
-    const diff = now - start;
-    return Math.floor(diff / (1000*60*60*24*7));
+    const start = new Date("2002-12-07")
+    const now = new Date()
+    const diff = now - start
+    return Math.floor(diff / (1000*60*60*24*7))
 }
 
-async function fetchRound(round){
-
-    const api =
-    `https://www.dhlottery.co.kr/common.do?method=getLottoNumber&drwNo=${round}`
-
-    const url =
-    `https://corsproxy.io/?${encodeURIComponent(api)}`
-
-    const res = await fetch(url)
-
-    const data = await res.json()
-
-    if(data.returnValue !== "success") return null
-
-    return data
-}
-
-async function loadLotto(){
+function loadLotto(){
 
     document.getElementById("result").innerText="조회중..."
 
     let round = estimateRound()
 
-    for(let i=0;i<5;i++){
+    tryRound(round)
+}
 
-        let data = await fetchRound(round)
+function tryRound(round){
 
-        if(data){
+    const script=document.createElement("script")
 
-            document.getElementById("result").innerHTML =
-            `${data.drwNo}회 (${data.drwNoDate})<br>
-            ${data.drwtNo1}, 
-            ${data.drwtNo2}, 
-            ${data.drwtNo3}, 
-            ${data.drwtNo4}, 
-            ${data.drwtNo5}, 
-            ${data.drwtNo6} 
-            + ${data.bnusNo}`
+    script.src=
+    "https://www.dhlottery.co.kr/common.do?method=getLottoNumber&drwNo="+round
 
-            return
+    script.onload=function(){
+
+        if(returnValue==="success"){
+
+            document.getElementById("result").innerHTML=
+            drwNo+"회 ("+drwNoDate+")<br>"+
+            drwtNo1+", "+
+            drwtNo2+", "+
+            drwtNo3+", "+
+            drwtNo4+", "+
+            drwtNo5+", "+
+            drwtNo6+
+            " + "+bnusNo
+
+        }else{
+
+            tryRound(round-1)
+
         }
 
-        round--
     }
 
-    document.getElementById("result").innerText="조회 실패"
+    document.body.appendChild(script)
 }
 
 </script>
