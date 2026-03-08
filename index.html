@@ -3,55 +3,57 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Lotto Viewer</title>
+<title>Lotto Debug</title>
 
 <style>
 body{
 font-family:Arial;
-text-align:center;
-background:#f4f4f4;
 padding:20px;
+}
+
+button{
+padding:10px;
+font-size:18px;
+}
+
+#log{
+margin-top:20px;
+padding:10px;
+background:#000;
+color:#0f0;
+font-size:14px;
+white-space:pre-line;
 }
 
 .ball{
 display:inline-block;
-width:42px;
-height:42px;
-line-height:42px;
+width:40px;
+height:40px;
+line-height:40px;
 border-radius:50%;
+background:#fbc400;
 margin:4px;
+text-align:center;
 font-weight:bold;
-color:white;
 }
-
-.c1{background:#fbc400}
-.c2{background:#69c8f2}
-.c3{background:#ff7272}
-.c4{background:#aaa}
-.c5{background:#b0d840}
 </style>
 
 </head>
 
 <body>
 
-<h2>로또 최신번호</h2>
+<h2>로또 디버그</h2>
 
-<button onclick="loadLatest()">조회</button>
+<button onclick="start()">조회</button>
 
-<div id="round"></div>
 <div id="numbers"></div>
+
+<div id="log"></div>
 
 <script>
 
-let currentRound
-
-function color(n){
-if(n<=10)return"c1"
-if(n<=20)return"c2"
-if(n<=30)return"c3"
-if(n<=40)return"c4"
-return"c5"
+function log(msg){
+document.getElementById("log").innerHTML+=msg+"\\n"
 }
 
 function estimateRound(){
@@ -59,12 +61,18 @@ function estimateRound(){
 const start=new Date("2002-12-07")
 const now=new Date()
 
-return Math.floor((now-start)/(1000*60*60*24*7))
+const round=Math.floor((now-start)/(1000*60*60*24*7))
+
+log("추정 회차: "+round)
+
+return round
 }
 
-function loadLatest(){
+let currentRound
 
-document.getElementById("round").innerText="조회중..."
+function start(){
+
+log("버튼 클릭")
 
 currentRound=estimateRound()
 
@@ -74,6 +82,8 @@ tryRound()
 
 function tryRound(){
 
+log("조회 시도 회차: "+currentRound)
+
 const script=document.createElement("script")
 
 script.src=
@@ -81,11 +91,17 @@ script.src=
 
 script.onload=function(){
 
+log("응답 도착")
+
 if(window.returnValue==="success"){
+
+log("성공 회차: "+drwNo)
 
 render()
 
 }else{
+
+log("fail → 이전 회차 시도")
 
 currentRound--
 
@@ -95,14 +111,17 @@ tryRound()
 
 }
 
+script.onerror=function(){
+
+log("스크립트 로딩 실패")
+
+}
+
 document.body.appendChild(script)
 
 }
 
 function render(){
-
-document.getElementById("round").innerText=
-drwNo+"회 ("+drwNoDate+")"
 
 const nums=[
 drwtNo1,
@@ -116,12 +135,14 @@ drwtNo6
 let html=""
 
 nums.forEach(n=>{
-html+=`<span class="ball ${color(n)}">${n}</span>`
+html+=`<span class="ball">${n}</span>`
 })
 
-html+=` + <span class="ball ${color(bnusNo)}">${bnusNo}</span>`
+html+=" + "+bnusNo
 
 document.getElementById("numbers").innerHTML=html
+
+log("렌더 완료")
 
 }
 
