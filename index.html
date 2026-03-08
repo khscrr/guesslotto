@@ -1,119 +1,332 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Lotto Matrix v5.7</title>
-    <style>
-        :root { --bg: #f4f7f6; --primary: #1a73e8; }
-        body { font-family: -apple-system, sans-serif; background: var(--bg); margin: 0; padding: 10px; display: flex; justify-content: center; }
-        .container { background: white; padding: 20px; border-radius: 25px; box-shadow: 0 10px 40px rgba(0,0,0,0.08); max-width: 480px; width: 100%; }
-        
-        /* 상단 배너 */
-        .info-header { background: #202124; color: white; padding: 20px; border-radius: 20px; text-align: center; margin-bottom: 20px; position: relative; }
-        .open-btn { display: block; background: #34a853; color: white; text-decoration: none; padding: 15px; border-radius: 12px; font-size: 1rem; font-weight: bold; margin-top: 5px; transition: 0.2s; border: none; cursor: pointer; }
-        .open-btn:active { background: #2d8a46; transform: scale(0.98); }
-        .return-notice { font-size: 0.75rem; color: #ffeb3b; margin-top: 10px; font-weight: 500; display: block; }
-
-        /* 가이드 및 그리드 (이전과 동일) */
-        .guide { display: flex; flex-wrap: wrap; gap: 4px; justify-content: center; margin-bottom: 15px; font-size: 0.65rem; }
-        .g-item { border: 1px solid #ddd; padding: 3px 6px; border-radius: 4px; background: #fff; }
-        .lotto-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; margin-bottom: 20px; }
-        .ball { aspect-ratio: 1; border-radius: 50%; border: none; font-weight: bold; font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: inset -3px -3px 6px rgba(0,0,0,0.2); transition: 0.15s; position: relative; color: white; }
-
-        /* 6단계 스타일 */
-        .s0 { background: #eee; color: #444; }
-        .s1 { background: #ef5350; outline: 3px solid #ef5350; outline-offset: 2px; }
-        .s2 { background: #ffa726; }
-        .s3 { background: #fff176; color: #444; }
-        .s4 { background: #cfd8dc; color: #90a4ae; }
-        .s5 { background: #90a4ae; color: #eceff1; filter: grayscale(0.8); }
-        .s6 { background: #37474f; color: #111; text-decoration: line-through; filter: brightness(0.5); }
-        
-        .ball::after { content: attr(data-label); position: absolute; bottom: -6px; font-size: 0.5rem; background: rgba(0,0,0,0.7); color: white; padding: 0 4px; border-radius: 4px; }
-        .s0::after { display: none; }
-
-        .gen-btn { width: 100%; padding: 20px; background: var(--primary); color: white; border: none; border-radius: 18px; font-size: 1.2rem; font-weight: bold; cursor: pointer; }
-        #results { margin-top: 25px; padding: 15px; background: #fffbe6; border-radius: 15px; border: 2px dashed #ffd666; }
-        .res-row { display: flex; align-items: center; padding: 10px 0; border-bottom: 1px solid rgba(0,0,0,0.05); }
-        .res-ball { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 0.8rem; margin-right: 5px; box-shadow: inset -2px -2px 4px rgba(0,0,0,0.2); }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>로또 6/45 당첨번호 조회</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&family=Bebas+Neue&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { min-height: 100vh; background: radial-gradient(ellipse at top, #141428 0%, #0a0a12 60%, #080810 100%); font-family: 'Noto Sans KR', sans-serif; color: #dde0f0; padding: 28px 16px 80px; }
+    .header { text-align: center; margin-bottom: 36px; }
+    .header-sub { font-size: 10px; letter-spacing: 5px; color: #7c6af0; font-weight: 800; text-transform: uppercase; margin-bottom: 10px; }
+    .header-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(48px, 12vw, 84px); letter-spacing: 5px; background: linear-gradient(120deg, #FFD700 0%, #FFA500 35%, #FF6B35 70%, #FFD700 100%); background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: shimmer 3.5s linear infinite; line-height: 1; }
+    .header-desc { font-size: 13px; color: #444; margin-top: 6px; }
+    .tabs { display: flex; gap: 8px; justify-content: center; margin-bottom: 28px; flex-wrap: wrap; }
+    .tab-btn { padding: 10px 18px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.06); font-size: 13px; font-weight: 800; cursor: pointer; background: rgba(255,255,255,0.04); color: #666; transition: all 0.15s ease; font-family: 'Noto Sans KR', sans-serif; }
+    .tab-btn.active { background: linear-gradient(135deg, #7c6af0, #5141c8); color: #fff; border-color: rgba(124,106,240,0.4); box-shadow: 0 4px 18px rgba(124,106,240,0.4); }
+    .container { max-width: 660px; margin: 0 auto; }
+    .panel { background: rgba(255,255,255,0.025); border: 1px solid rgba(255,255,255,0.07); border-radius: 22px; padding: 26px 24px 30px; display: none; }
+    .panel.active { display: block; }
+    .search-form { display: flex; gap: 8px; margin-bottom: 28px; }
+    .search-input { flex: 1; padding: 13px 16px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.04); color: #e0e0f0; font-size: 15px; font-family: 'Noto Sans KR', sans-serif; }
+    .search-input:focus { outline: none; border-color: #7c6af0; box-shadow: 0 0 0 3px rgba(124,106,240,0.2); }
+    .btn { padding: 13px 20px; border-radius: 12px; border: none; font-weight: 900; font-size: 15px; cursor: pointer; font-family: 'Noto Sans KR', sans-serif; }
+    .btn-gold { background: linear-gradient(135deg, #FBC400, #f09000); color: #1a1200; box-shadow: 0 4px 16px rgba(251,196,0,0.4); }
+    .btn-ghost { background: rgba(255,255,255,0.04); color: #888; border: 1px solid rgba(255,255,255,0.1); font-size: 12px; white-space: nowrap; }
+    .btn-purple { background: linear-gradient(135deg, #7c6af0, #4f3ec8); color: #fff; box-shadow: 0 6px 28px rgba(124,106,240,0.5); font-size: 17px; padding: 16px 48px; border-radius: 16px; }
+    .spinner-wrap { text-align: center; padding: 48px 0; }
+    .spinner { width: 36px; height: 36px; border-radius: 50%; border: 3px solid rgba(124,106,240,0.15); border-top-color: #7c6af0; animation: spin 0.7s linear infinite; margin: 0 auto 14px; }
+    .spinner-text { color: #555; font-size: 13px; }
+    .error-box { padding: 18px; border-radius: 14px; background: rgba(255,80,80,0.07); border: 1px solid rgba(255,80,80,0.2); color: #ff7070; font-size: 13px; white-space: pre-line; line-height: 1.6; }
+    .debug-box { margin-top: 12px; padding: 14px; border-radius: 10px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.06); font-size: 11px; color: #666; white-space: pre-line; font-family: monospace; line-height: 1.7; }
+    .result-wrap { animation: fadeUp 0.3s ease both; }
+    .result-header { text-align: center; margin-bottom: 28px; }
+    .result-round-label { font-size: 11px; letter-spacing: 3px; color: #555; text-transform: uppercase; margin-bottom: 6px; }
+    .result-round { font-size: 32px; font-weight: 900; color: #FBC400; }
+    .result-date { font-size: 13px; color: #444; margin-top: 5px; }
+    .balls-row { display: flex; align-items: flex-end; justify-content: center; gap: 10px; flex-wrap: wrap; margin-bottom: 32px; }
+    .ball-wrap { display: inline-flex; flex-direction: column; align-items: center; }
+    .ball-bonus-label { font-size: 9px; color: #FFD700; font-weight: 800; letter-spacing: 1px; margin-bottom: 4px; text-transform: uppercase; }
+    .ball { border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; flex-shrink: 0; }
+    .ball span { text-shadow: 0 1px 3px rgba(0,0,0,0.4); }
+    .ball-lg { width: 62px; height: 62px; font-size: 21px; }
+    .ball-sm { width: 38px; height: 38px; font-size: 13px; }
+    .plus-sign { color: #333; font-size: 24px; padding-bottom: 8px; }
+    .plus-sign-sm { color: #333; font-size: 18px; }
+    .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .stat-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 14px; padding: 14px 16px; }
+    .stat-icon { font-size: 20px; margin-bottom: 6px; }
+    .stat-label { font-size: 11px; color: #555; }
+    .stat-value { font-size: 17px; font-weight: 900; color: #FBC400; margin-top: 3px; }
+    .recent-list { display: flex; flex-direction: column; gap: 14px; }
+    .recent-card { background: rgba(255,255,255,0.025); border: 1px solid rgba(255,255,255,0.07); border-radius: 18px; padding: 18px 20px; animation: fadeUp 0.35s ease both; }
+    .recent-card-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 14px; flex-wrap: wrap; gap: 6px; }
+    .recent-round { font-size: 18px; font-weight: 900; color: #FBC400; }
+    .recent-date { font-size: 12px; color: #444; margin-left: 10px; }
+    .recent-prize { font-size: 12px; color: #7c6af0; font-weight: 800; }
+    .generate-panel { text-align: center; padding: 36px 24px 40px; }
+    .generate-hint { font-size: 13px; color: #444; margin-bottom: 30px; }
+    .generated-result { margin-top: 40px; }
+    .generated-nums { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; margin-bottom: 28px; }
+    .generated-text { font-size: 13px; color: #333; padding: 12px 20px; background: rgba(255,255,255,0.03); border-radius: 10px; display: inline-block; margin-bottom: 16px; }
+    .generated-text strong { color: #FBC400; }
+    .caution { font-size: 12px; color: #333; }
+    .legend { margin-top: 32px; display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; }
+    .legend-item { display: flex; align-items: center; gap: 6px; }
+    .legend-dot { width: 11px; height: 11px; border-radius: 50%; }
+    .legend-text { font-size: 11px; color: #444; }
+    @keyframes shimmer { 0%{background-position:-200% center} 100%{background-position:200% center} }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes ballDrop { from{transform:translateY(-40px) scale(0.4);opacity:0} to{transform:translateY(0) scale(1);opacity:1} }
+  </style>
 </head>
 <body>
-
-<div class="container">
-    <div class="info-header">
-        <div style="font-size: 0.9rem; margin-bottom: 5px;">실시간 당첨번호 확인</div>
-        <a href="https://m.dhlottery.co.kr/lt645/result" target="_blank" rel="noopener" class="open-btn">당첨 결과 보러가기 ➔</a>
-        <span class="return-notice">💡 번호 확인 후 [뒤로가기]로 돌아오세요!</span>
+  <div class="header">
+    <div class="header-sub">동행복권 · Korea Lottery</div>
+    <div class="header-title">LOTTO 6/45</div>
+    <div class="header-desc">당첨번호 조회 · 최근 결과 · 번호 생성</div>
+  </div>
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('search', this)">🔍 회차 조회</button>
+    <button class="tab-btn" onclick="switchTab('recent', this)">📋 최근 당첨</button>
+    <button class="tab-btn" onclick="switchTab('generate', this)">🎲 번호 생성</button>
+  </div>
+  <div class="container">
+    <div id="panel-search" class="panel active">
+      <div class="search-form">
+        <input type="number" id="drwNoInput" class="search-input" placeholder="회차 입력 (예: 1150)" min="1" />
+        <button class="btn btn-gold" onclick="searchByInput()">조회</button>
+        <button class="btn btn-ghost" onclick="fetchLatest()">최신</button>
+      </div>
+      <div id="search-result"></div>
     </div>
-
-    <div class="guide">
-        <span class="g-item">🔴꼭!</span> <span class="g-item">🟠최상</span> <span class="g-item">🟡높음</span>
-        <span class="g-item">⚪보통</span> <span class="g-item">🔘낮음</span> <span class="g-item">🔲최저</span> <span class="g-item">⚫제외</span>
+    <div id="panel-recent" class="panel">
+      <div id="recent-result"></div>
     </div>
+    <div id="panel-generate" class="panel generate-panel">
+      <div class="generate-hint">1~45 사이의 번호 6개를 무작위로 생성합니다</div>
+      <button class="btn btn-purple" onclick="generateNumbers()">🎲 행운의 번호 뽑기</button>
+      <div id="generate-result"></div>
+    </div>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#FBC400"></div><span class="legend-text">1–10</span></div>
+      <div class="legend-item"><div class="legend-dot" style="background:#069FCE"></div><span class="legend-text">11–20</span></div>
+      <div class="legend-item"><div class="legend-dot" style="background:#FF5349"></div><span class="legend-text">21–30</span></div>
+      <div class="legend-item"><div class="legend-dot" style="background:#666"></div><span class="legend-text">31–40</span></div>
+      <div class="legend-item"><div class="legend-dot" style="background:#2DB400"></div><span class="legend-text">41–45</span></div>
+    </div>
+  </div>
 
-    <div id="grid" class="lotto-grid"></div>
+  <script>
+    var LOTTO_API = function(n) {
+      return 'https://www.dhlottery.co.kr/common.do?method=getLottoNumber&drwNo=' + n;
+    };
+    var ESTIMATED_LATEST = Math.floor((new Date() - new Date('2002-12-07')) / (7 * 24 * 60 * 60 * 1000));
 
-    <button class="gen-btn" onclick="generate()">🎲 예측 번호 생성</button>
-    <div id="results" style="display:none;"></div>
-</div>
+    // ★ AbortController / signal 완전 미사용 — DataCloneError 원인이므로 제거
+    // 타임아웃은 Promise.race + 더미 reject 타이머로만 처리
+    function timedFetch(url, ms) {
+      var timeoutP = new Promise(function(_, reject) {
+        setTimeout(function() { reject(new Error('timeout')); }, ms);
+      });
+      return Promise.race([fetch(url), timeoutP]);
+    }
 
-<script>
-    const states = Array(46).fill(0);
-    const labels = ["", "꼭!", "최상", "높음", "낮음", "최저", "제외"];
-    const weights = [1000, 10000000, 500000, 50000, 500, 10, 0];
+    var PROXIES = [
+      { name: 'corsproxy.io',   url: function(u){ return 'https://corsproxy.io/?' + encodeURIComponent(u); } },
+      { name: 'allorigins-raw', url: function(u){ return 'https://api.allorigins.win/raw?url=' + encodeURIComponent(u); } },
+      { name: 'allorigins-get', url: function(u){ return 'https://api.allorigins.win/get?url=' + encodeURIComponent(u); } },
+    ];
 
-    function initGrid() {
-        const g = document.getElementById('grid');
-        for(let i=1; i<=45; i++) {
-            const b = document.createElement('button');
-            b.id = 'n'+i; b.className = 'ball s0'; b.innerText = i;
-            b.setAttribute('data-label', '');
-            b.onclick = () => {
-                states[i] = (states[i] + 1) % 7;
-                b.className = 'ball s' + states[i];
-                b.setAttribute('data-label', labels[states[i]]);
-            };
-            g.appendChild(b);
+    var debugLog = [];
+
+    function fetchWithFallback(apiUrl) {
+      debugLog = [];
+      // 프록시를 순서대로 Promise chain으로 시도
+      var chain = Promise.reject(new Error('init'));
+      PROXIES.forEach(function(proxy) {
+        chain = chain.catch(function() {
+          return timedFetch(proxy.url(apiUrl), 10000)
+            .then(function(res) {
+              if (!res.ok) { throw new Error('HTTP ' + res.status); }
+              return res.text();
+            })
+            .then(function(text) {
+              var outer = JSON.parse(text);
+              var data = (outer && outer.contents) ? JSON.parse(outer.contents) : outer;
+              if (!data || data.returnValue !== 'success') { throw new Error('returnValue=' + (data && data.returnValue)); }
+              debugLog.push(proxy.name + ': 성공');
+              return data;
+            })
+            .catch(function(e) {
+              debugLog.push(proxy.name + ': ' + e.message);
+              throw e;
+            });
+        });
+      });
+      return chain.catch(function() {
+        throw new Error('모든 프록시 실패:\n' + debugLog.join('\n'));
+      });
+    }
+
+    function getBallStyle(num, size) {
+      var bg, shadow, text;
+      if      (num <= 10) { bg = '#FBC400'; shadow = '#c49000'; text = '#1a1200'; }
+      else if (num <= 20) { bg = '#069FCE'; shadow = '#0476a0'; text = '#fff'; }
+      else if (num <= 30) { bg = '#FF5349'; shadow = '#cc3d33'; text = '#fff'; }
+      else if (num <= 40) { bg = '#666666'; shadow = '#333';    text = '#fff'; }
+      else                { bg = '#2DB400'; shadow = '#1d8a00'; text = '#fff'; }
+      var dim = (size === 'lg') ? '62px' : '38px';
+      var fs  = (size === 'lg') ? '21px' : '13px';
+      return 'width:' + dim + ';height:' + dim + ';font-size:' + fs + ';'
+           + 'background:radial-gradient(circle at 35% 28%,' + bg + ',' + shadow + ');'
+           + 'box-shadow:0 2px 12px ' + bg + '66,inset 0 -5px 10px rgba(0,0,0,0.35),inset 0 3px 6px rgba(255,255,255,0.35);'
+           + 'color:' + text + ';';
+    }
+
+    function getBallColor(num) {
+      if (num <= 10) return '#FBC400';
+      if (num <= 20) return '#069FCE';
+      if (num <= 30) return '#FF5349';
+      if (num <= 40) return '#666666';
+      return '#2DB400';
+    }
+
+    function ballHTML(num, isBonus, size, delay) {
+      var style   = getBallStyle(num, size);
+      var outline = isBonus ? 'outline:2.5px dashed ' + getBallColor(num) + ';outline-offset:3px;' : '';
+      var anim    = (typeof delay !== 'undefined') ? 'animation:ballDrop 0.45s cubic-bezier(0.34,1.56,0.64,1) ' + delay + 'ms both;' : '';
+      return '<div class="ball-wrap">'
+        + (isBonus ? '<span class="ball-bonus-label">bonus</span>' : '')
+        + '<div class="ball ball-' + size + '" style="' + style + outline + anim + '">'
+        + '<span>' + num + '</span></div></div>';
+    }
+
+    function formatMoney(v)      { return v ? (v / 100000000).toFixed(2) + '억원' : '-'; }
+    function formatMoneyShort(v) { return v ? (v / 100000000).toFixed(1)  + '억'  : '-'; }
+
+    function showSpinner() {
+      return '<div class="spinner-wrap"><div class="spinner"></div><div class="spinner-text">불러오는 중...</div></div>';
+    }
+
+    function showError(msg) {
+      var log = debugLog.length
+        ? '<div class="debug-box">🔍 진단 로그:\n' + debugLog.join('\n') + '</div>'
+        : '';
+      return '<div class="error-box">⚠️ ' + msg + log + '</div>';
+    }
+
+    function renderResult(data) {
+      var balls = '';
+      for (var i = 1; i <= 6; i++) balls += ballHTML(data['drwtNo' + i], false, 'lg', (i - 1) * 90);
+      return '<div class="result-wrap">'
+        + '<div class="result-header">'
+        +   '<div class="result-round-label">당첨번호</div>'
+        +   '<div class="result-round">제 ' + data.drwNo + '회</div>'
+        +   '<div class="result-date">📅 ' + data.drwNoDate + '</div>'
+        + '</div>'
+        + '<div class="balls-row">' + balls
+        +   '<span class="plus-sign">+</span>'
+        +   ballHTML(data.bnusNo, true, 'lg', 700)
+        + '</div>'
+        + '<div class="stats-grid">'
+        +   '<div class="stat-card"><div class="stat-icon">🥇</div><div class="stat-label">1등 당첨금</div><div class="stat-value">' + formatMoney(data.firstWinamnt) + '</div></div>'
+        +   '<div class="stat-card"><div class="stat-icon">👥</div><div class="stat-label">1등 당첨자 수</div><div class="stat-value">' + data.firstPrzwnerCo + '명</div></div>'
+        +   '<div class="stat-card"><div class="stat-icon">💰</div><div class="stat-label">총 판매금액</div><div class="stat-value">' + formatMoneyShort(data.totSellamnt) + '</div></div>'
+        +   '<div class="stat-card"><div class="stat-icon">🏆</div><div class="stat-label">1등 총 당첨금액</div><div class="stat-value">' + formatMoneyShort(data.firstAccumamnt) + '</div></div>'
+        + '</div></div>';
+    }
+
+    function fetchLotto(drwNo) {
+      document.getElementById('search-result').innerHTML = showSpinner();
+      fetchWithFallback(LOTTO_API(drwNo))
+        .then(function(data) {
+          document.getElementById('search-result').innerHTML = renderResult(data);
+          document.getElementById('drwNoInput').value = data.drwNo;
+        })
+        .catch(function(e) {
+          document.getElementById('search-result').innerHTML = showError(e.message);
+        });
+    }
+
+    function fetchLatest() {
+      document.getElementById('search-result').innerHTML = showSpinner();
+      var candidates = [];
+      for (var i = ESTIMATED_LATEST + 2; i >= ESTIMATED_LATEST - 3; i--) candidates.push(i);
+      var promises = candidates.map(function(n) {
+        return fetchWithFallback(LOTTO_API(n)).catch(function() { return null; });
+      });
+      Promise.all(promises).then(function(results) {
+        var valid = results.filter(Boolean).sort(function(a, b) { return b.drwNo - a.drwNo; });
+        if (!valid.length) {
+          document.getElementById('search-result').innerHTML = showError('최신 회차를 불러오지 못했습니다.');
+        } else {
+          document.getElementById('search-result').innerHTML = renderResult(valid[0]);
+          document.getElementById('drwNoInput').value = valid[0].drwNo;
         }
+      });
     }
 
-    function generate() {
-        const resDiv = document.getElementById('results');
-        resDiv.innerHTML = ''; resDiv.style.display = 'block';
-        const fixed = states.map((s, i) => s === 1 ? i : null).filter(v => v);
-        if(fixed.length > 6) { alert("고정 숫자는 6개 이하로 해주세요!"); return; }
+    function searchByInput() {
+      var val = parseInt(document.getElementById('drwNoInput').value);
+      if (!val || val < 1) return;
+      fetchLotto(val);
+    }
 
-        for(let g=0; g<5; g++) {
-            let picks = [...fixed].slice(0,6);
-            let pool = [];
-            for(let i=1; i<=45; i++) {
-                if(picks.includes(i) || states[i] === 6) continue;
-                let w = weights[states[i]];
-                for(let j=0; j<w; j += (w > 1000 ? 1000 : 1)) pool.push(i); 
-            }
-            while(picks.length < 6 && pool.length > 0) {
-                const idx = Math.floor(Math.random()*pool.length);
-                const pick = pool[idx];
-                picks.push(pick);
-                pool = pool.filter(n => n !== pick);
-            }
-            const row = document.createElement('div');
-            row.className = 'res-row';
-            row.innerHTML = `<div style="width:30px; font-size:0.7rem; font-weight:bold; color:#999;">#${g+1}</div>` + 
-                            picks.sort((a,b)=>a-b).map(n => `<div class="res-ball" style="background:${getBallColor(n)}">${n}</div>`).join('');
-            resDiv.appendChild(row);
+    document.getElementById('drwNoInput').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') searchByInput();
+    });
+
+    var recentLoaded = false;
+    function fetchRecent() {
+      if (recentLoaded) return;
+      document.getElementById('recent-result').innerHTML = showSpinner();
+      var candidates = [];
+      for (var i = ESTIMATED_LATEST + 2; i >= ESTIMATED_LATEST - 5; i--) candidates.push(i);
+      var promises = candidates.map(function(n) {
+        return fetchWithFallback(LOTTO_API(n)).catch(function() { return null; });
+      });
+      Promise.all(promises).then(function(results) {
+        var list = results.filter(Boolean).sort(function(a, b) { return b.drwNo - a.drwNo; }).slice(0, 5);
+        if (!list.length) {
+          document.getElementById('recent-result').innerHTML = showError('최근 회차를 불러오지 못했습니다.');
+          return;
         }
+        var html = list.map(function(item, idx) {
+          var balls = '';
+          for (var i = 1; i <= 6; i++) balls += ballHTML(item['drwtNo' + i], false, 'sm', 0);
+          return '<div class="recent-card" style="animation-delay:' + (idx * 70) + 'ms">'
+            + '<div class="recent-card-header">'
+            +   '<div><span class="recent-round">제 ' + item.drwNo + '회</span>'
+            +   '<span class="recent-date">' + item.drwNoDate + '</span></div>'
+            +   '<span class="recent-prize">' + formatMoneyShort(item.firstWinamnt) + ' · ' + item.firstPrzwnerCo + '명</span>'
+            + '</div>'
+            + '<div class="balls-row" style="justify-content:flex-start;gap:8px;margin-bottom:0">'
+            +   balls + '<span class="plus-sign-sm">+</span>' + ballHTML(item.bnusNo, true, 'sm', 0)
+            + '</div></div>';
+        }).join('');
+        document.getElementById('recent-result').innerHTML = '<div class="recent-list">' + html + '</div>';
+        recentLoaded = true;
+      });
     }
 
-    function getBallColor(n) {
-        if (n <= 10) return '#fbc400'; if (n <= 20) return '#69c8f2';
-        if (n <= 30) return '#ff7272'; if (n <= 40) return '#aaaaaa';
-        return '#b0d840';
+    function generateNumbers() {
+      var nums = [];
+      while (nums.length < 6) {
+        var n = Math.floor(Math.random() * 45) + 1;
+        if (nums.indexOf(n) === -1) nums.push(n);
+      }
+      nums.sort(function(a, b) { return a - b; });
+      var balls = nums.map(function(n, idx) { return ballHTML(n, false, 'lg', idx * 100); }).join('');
+      document.getElementById('generate-result').innerHTML =
+        '<div class="generated-result">'
+        + '<div class="generated-nums">' + balls + '</div>'
+        + '<div class="generated-text">선택 번호: <strong>' + nums.join(', ') + '</strong></div>'
+        + '<div class="caution">⚠️ 로또는 즐거운 오락입니다. 과도한 구매는 삼가세요.</div>'
+        + '</div>';
     }
 
-    initGrid();
-</script>
+    function switchTab(name, btn) {
+      document.querySelectorAll('.panel').forEach(function(p) { p.classList.remove('active'); });
+      document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
+      document.getElementById('panel-' + name).classList.add('active');
+      btn.classList.add('active');
+      if (name === 'recent') fetchRecent();
+    }
+
+    fetchLatest();
+  </script>
 </body>
 </html>
