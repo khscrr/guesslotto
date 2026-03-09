@@ -9,47 +9,49 @@
         body { font-family: -apple-system, sans-serif; background: var(--bg); margin: 0; padding: 10px; display: flex; justify-content: center; }
         .container { max-width: 480px; width: 100%; display: flex; flex-direction: column; gap: var(--gap); padding-bottom: 20px; }
         
-        /* [추가] 실시간 당첨 번호 헤더 */
+        /* 실시간 당첨 번호 헤더 */
         .live-result-box { background: #202124; padding: 18px; border-radius: 25px; text-align: center; color: white; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
         .live-title { font-size: 0.75rem; color: #aaa; margin-bottom: 10px; font-weight: bold; }
-        .live-balls { display: flex; justify-content: center; gap: 6px; align-items: center; }
+        .live-balls { display: flex; justify-content: center; gap: 6px; align-items: center; min-height: 32px; }
         .l-ball { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; font-weight: 800; color: white; border: 1.5px solid rgba(255,255,255,0.2); }
         .l-plus { font-size: 1.2rem; font-weight: bold; color: #777; margin: 0 2px; }
 
         .section-box { background: white; padding: 15px; border-radius: 25px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); }
         .standard-grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 6px; width: 100%; }
-
-        /* ... (기존 스타일 유지) ... */
+        
         .g-item-wrapper { display: flex; flex-direction: column; align-items: center; gap: 4px; }
         .g-text { font-size: 0.42rem; font-weight: bold; color: #999; text-align: center; white-space: nowrap; }
         .ball, .guide-ball { aspect-ratio: 1; border-radius: 50%; border: 1px solid rgba(0,0,0,0.08); display: flex; align-items: center; justify-content: center; transition: 0.2s; position: relative; width: 100%; overflow: hidden; background-color: #eee; }
-        .ball { cursor: pointer; }
+        .ball { cursor: pointer; border: none; outline: none; }
         .ball-num { position: absolute; font-weight: 800; font-size: 0.9rem; z-index: 1; transition: 0.2s; color: rgba(0,0,0,0.8); }
         .ball-label { position: relative; z-index: 2; display: none; width: 100%; height: 100%; align-items: center; justify-content: center; }
         .icon-svg { width: 65%; height: 65%; fill: none; stroke: currentColor; stroke-width: 3.5; stroke-linecap: round; stroke-linejoin: round; }
         .mini-icon { width: 12px; height: 12px; margin-left: 2px; vertical-align: middle; stroke-width: 4; }
         .txt-label { font-size: 0.65rem; letter-spacing: -1.2px; font-weight: 900; white-space: nowrap; transform: scaleX(0.85); fill: currentColor; }
+        
+        /* 상태별 색상 */
         .s1 { background-color: #333 !important; color: #fff; }
         .s2 { background-color: #cfd8dc !important; color: #444; } 
         .s3 { background-color: #eceff1 !important; color: #666; }
         .s4 { background-color: #69c8f2 !important; border: 1.5px solid #555; color: #fff; }
         .s5 { background-color: #fbc400 !important; border: 2px solid #000; color: #fff; }
         .s6 { background-color: #ef5350 !important; border: 2.5px solid #ef5350; color: #fff; }
+
         .collapsible { background: #f8f9fa; border-radius: 15px; margin-top: 10px; overflow: hidden; border: 1px solid #eee; }
         .collapsible-header { padding: 10px 15px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; background: #f1f3f4; }
         .collapsible-header span { font-size: 0.8rem; font-weight: bold; color: #555; }
-        .collapsible-content { max-height: 0; overflow: hidden; transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1); background: #fff; }
+        .collapsible-content { max-height: 0; overflow: hidden; transition: max-height 0.35s ease; background: #fff; }
         .desc-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 15px; border-bottom: 1px solid rgba(0,0,0,0.03); }
         .weight-input { width: 60px; padding: 6px; border: 1px solid #ddd; border-radius: 8px; text-align: right; font-size: 0.8rem; font-weight: bold; color: var(--primary); outline: none; }
-        .gen-btn { width: 100%; padding: 20px; background: var(--primary); color: white; border: none; border-radius: 20px; font-size: 1.1rem; font-weight: bold; cursor: pointer; margin: 0; }
+        
+        .gen-btn { width: 100%; padding: 20px; background: var(--primary); color: white; border: none; border-radius: 20px; font-size: 1.1rem; font-weight: bold; cursor: pointer; }
         #results { padding: 20px 10px; background: #fffbe6; border-radius: 20px; border: 1px dashed #ffd666; display: flex; flex-direction: column; align-items: center; gap: 10px; }
         .res-row { display: flex; align-items: center; justify-content: center; width: 100%; padding: 5px 0; }
         .res-idx { font-size: 0.65rem; font-weight: bold; color: #bbb; margin-right: 10px; width: 20px; text-align: right; }
         .res-ball-group { display: flex; gap: 6px; }
         .res-ball { width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 1.05rem; box-shadow: 0 3px 6px rgba(0,0,0,0.1); border: 1px solid rgba(0,0,0,0.1); }
-        .ad-container { display: none; width: 100%; text-align: center; background: white; padding: 15px; border-radius: 25px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); box-sizing: border-box; }
-        .ad-helper-text { font-size: 0.55rem; color: #aaa; margin-top: 8px; }
-        .footer-legal { text-align: center; font-size: 0.6rem; color: #bbb; padding: 10px 0 0 0; line-height: 1.4; }
+        
+        .footer-legal { text-align: center; font-size: 0.6rem; color: #bbb; padding: 10px 0; line-height: 1.4; }
     </style>
 </head>
 <body>
@@ -79,81 +81,90 @@
 
     <button class="gen-btn" onclick="generate()">🎲 예측 번호 생성</button>
     <div id="results" style="display:none;"></div>
-    <div id="ad-area" class="ad-container">
-        <div id="ad-loader"></div>
-        <div class="ad-helper-text">광고 지원은 서비스 운영에 큰 힘이 됩니다.</div>
-    </div>
+    
     <div class="footer-legal">이 포스팅은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.</div>
 </div>
 
 <script>
-    // ⚠️ 여기에 사용자님의 Cloudflare Worker URL을 입력하세요!
-    const WORKER_URL = "https://lottowrk.khscrr.workers.de//"; 
+    // ⚠️ 사용자님의 Cloudflare Worker URL을 여기에 입력하세요!
+    const WORKER_URL = "https://lottowrk.khscrr.workers.dev/"; 
 
     let userWeights = [1.0, 0, 0.1, 0.5, 2.0, 10.0, 10000]; 
     const states = Array(46).fill(0);
 
+    // [중요] 최신 당첨 데이터 가져오기 (Worker 연동)
     async function fetchLatestLotto() {
-    const drawInfo = document.getElementById('draw-info');
-    const ballContainer = document.getElementById('live-balls');
+        const drawInfo = document.getElementById('draw-info');
+        const ballContainer = document.getElementById('live-balls');
 
-    try {
-        // 1. 현재 날짜 기준 회차 계산 (매주 토요일 20:45분 기준 업데이트)
-        const baseDate = new Date('2023-12-30T21:00:00'); // 1100회차 기준
-        const now = new Date();
-        const diffWeeks = Math.floor((now - baseDate) / (7 * 24 * 60 * 60 * 1000));
-        let targetDrwNo = 1100 + diffWeeks;
+        try {
+            // 현재 날짜 기준으로 회차 계산 (1100회차 = 2023-12-30 기준)
+            const baseDate = new Date('2023-12-30T21:00:00');
+            const now = new Date();
+            const diffWeeks = Math.floor((now - baseDate) / (7 * 24 * 60 * 60 * 1000));
+            let targetDrwNo = 1100 + diffWeeks;
 
-        // 2. AllOrigins 프록시를 사용하여 차단 우회
-        // 동행복권 API를 직접 호출하지 않고 AllOrigins를 거쳐서 가져옵니다.
-        const targetApi = `https://www.dhlottery.co.kr/common.do?method=getLottoNumber&drwNo=${targetDrwNo}`;
-        const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(targetApi)}`;
-        
-        const response = await fetch(proxyUrl);
-        if (!response.ok) throw new Error('Proxy Server Error');
-        
-        const resData = await response.json();
-        // AllOrigins는 실제 데이터를 'contents'라는 문자열 안에 담아줍니다.
-        const data = JSON.parse(resData.contents);
+            const baseUrl = WORKER_URL.endsWith('/') ? WORKER_URL : WORKER_URL + '/';
+            const response = await fetch(`${baseUrl}?drwNo=${targetDrwNo}`);
+            const data = await response.json();
 
-        if (data.returnValue === "fail") {
-            // 이번 주 결과가 아직 안 나왔다면 이전 회차 다시 시도
-            const prevApi = `https://www.dhlottery.co.kr/common.do?method=getLottoNumber&drwNo=${targetDrwNo - 1}`;
-            const prevRes = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(prevApi)}`);
-            const prevResData = await prevRes.json();
-            renderLiveBalls(JSON.parse(prevResData.contents));
-        } else {
-            renderLiveBalls(data);
+            // 만약 이번 주 결과가 미발표(fail)라면 지난 주 데이터 가져오기
+            if (data.returnValue === "fail" || data.error) {
+                const prevRes = await fetch(`${baseUrl}?drwNo=${targetDrwNo - 1}`);
+                const prevData = await prevRes.json();
+                renderLiveBalls(prevData);
+            } else {
+                renderLiveBalls(data);
+            }
+        } catch (e) {
+            drawInfo.innerText = "연결 오류: 워커 설정을 확인하세요.";
+            console.error("Fetch Error:", e);
         }
-    } catch (e) {
-        drawInfo.innerText = "당첨 결과를 불러오지 못했습니다. (공식 홈페이지 참고)";
-        console.error("데이터 로드 실패:", e);
     }
-}
 
     function renderLiveBalls(data) {
         const drawInfo = document.getElementById('draw-info');
         const ballContainer = document.getElementById('live-balls');
         
+        if (!data || !data.drwtNo1) {
+            drawInfo.innerText = "당첨 정보를 불러올 수 없습니다.";
+            return;
+        }
+
         drawInfo.innerText = `제 ${data.drwNo}회 당첨 결과 (${data.drwNoDate})`;
         const nums = [data.drwtNo1, data.drwtNo2, data.drwtNo3, data.drwtNo4, data.drwtNo5, data.drwtNo6];
         
         ballContainer.innerHTML = nums.map(n => 
-            `<div class="l-ball" style="background:${getBallColor(n)}">${n}</div>`
-        ).join('') + `<div class="l-plus">+</div><div class="l-ball" style="background:${getBallColor(data.bnusNo)}">${data.bnusNo}</div>`;
+            `<div class="l-ball" style="background:${getBallColor(Number(n))}">${n}</div>`
+        ).join('') + `<div class="l-plus">+</div><div class="l-ball" style="background:${getBallColor(Number(data.bnusNo))}">${data.bnusNo}</div>`;
     }
 
-    // ... (기존 JavaScript 로직 동일하게 유지) ...
+    function getBallColor(n) {
+        if (n <= 10) return '#fbc400';
+        if (n <= 20) return '#69c8f2';
+        if (n <= 30) return '#ff7272';
+        if (n <= 40) return '#aaaaaa';
+        return '#b0d840';
+    }
+
     function toggleAccordion() {
         const content = document.getElementById('accordion-content');
         const status = document.getElementById('accordion-status');
-        if (content.style.maxHeight && content.style.maxHeight !== '0px') { content.style.maxHeight = '0px'; status.innerText = "- 펼치기"; } 
-        else { content.style.maxHeight = content.scrollHeight + "px"; status.innerText = "- 접기"; }
+        if (content.style.maxHeight && content.style.maxHeight !== '0px') {
+            content.style.maxHeight = '0px';
+            status.innerText = "- 펼치기";
+        } else {
+            content.style.maxHeight = content.scrollHeight + "px";
+            status.innerText = "- 접기";
+        }
     }
+
     function updateWeight(index, value) { userWeights[index] = parseFloat(value) || 0; }
+
     function getIcon(state, isMini = false) {
         const cls = isMini ? "icon-svg mini-icon" : "icon-svg";
-        const svgStart = `<svg class="${cls}" viewBox="0 0 24 24">`; const svgEnd = `</svg>`;
+        const svgStart = `<svg class="${cls}" viewBox="0 0 24 24">`;
+        const svgEnd = `</svg>`;
         switch(state) {
             case 1: return isMini ? "" : `<span class="txt-label">제외</span>`;
             case 2: return svgStart + `<path d="M7 7l5 5 5-5M7 14l5 5 5-5"/>` + svgEnd;
@@ -164,52 +175,92 @@
             default: return "";
         }
     }
+
     function initGuide() {
         const guideGrid = document.getElementById('guide-grid');
         const probDesc = document.getElementById('probability-desc');
         const labels = ["보통", "제외", "확률", "확률", "확률", "확률", "포함"];
-        const descData = [{ s: 6, txt: "포함", val: "무조건", readonly: true },{ s: 5, txt: "확률", val: userWeights[5] },{ s: 4, txt: "확률", val: userWeights[4] },{ s: 0, txt: "보통", val: userWeights[0], readonly: true },{ s: 3, txt: "확률", val: userWeights[3] },{ s: 2, txt: "확률", val: userWeights[2] },{ s: 1, txt: "제외", val: "0", readonly: true }];
+        const descData = [
+            { s: 6, txt: "포함", val: "무조건", readonly: true },
+            { s: 5, txt: "확률", val: userWeights[5] },
+            { s: 4, txt: "확률", val: userWeights[4] },
+            { s: 0, txt: "보통", val: userWeights[0], readonly: true },
+            { s: 3, txt: "확률", val: userWeights[3] },
+            { s: 2, txt: "확률", val: userWeights[2] },
+            { s: 1, txt: "제외", val: "0", readonly: true }
+        ];
+
         for(let i=0; i<=6; i++) {
-            const wrapper = document.createElement('div'); wrapper.className = 'g-item-wrapper';
+            const wrapper = document.createElement('div');
+            wrapper.className = 'g-item-wrapper';
             const mini = (i >= 2 && i <= 5) ? getIcon(i, true) : "";
-            wrapper.innerHTML = `<div class="guide-ball s${i}"><span class="ball-num">45</span><div class="ball-label" style="${i===0?'display:none':'display:flex'}">${getIcon(i)}</div></div><span class="g-text">${labels[i]}${mini}</span>`;
+            wrapper.innerHTML = `
+                <div class="guide-ball s${i}"><span class="ball-num">45</span><div class="ball-label" style="${i===0?'display:none':'display:flex'}">${getIcon(i)}</div></div>
+                <span class="g-text">${labels[i]}${mini}</span>`;
             guideGrid.appendChild(wrapper);
         }
+
         probDesc.innerHTML = descData.map(d => {
             const mini = (d.s >= 2 && d.s <= 5) ? getIcon(d.s, true) : "";
-            const labelText = d.s === 0 || d.s === 1 || d.s === 6 ? d.txt : `${d.txt}${mini}`;
-            return `<div class="desc-item"><div class="desc-label"><span style="font-size:0.8rem; color:#444;">${labelText}</span></div>${d.readonly ? `<span style="font-size:0.8rem; font-weight:bold; padding-right:10px; color:#666;">${d.val}</span>` : `<input type="number" step="0.1" class="weight-input" value="${d.val}" onchange="updateWeight(${d.s}, this.value)">`}</div>`;
+            const labelText = (d.s === 0 || d.s === 1 || d.s === 6) ? d.txt : `${d.txt}${mini}`;
+            return `
+                <div class="desc-item">
+                    <div class="desc-label"><span style="font-size:0.8rem; color:#444;">${labelText}</span></div>
+                    ${d.readonly ? `<span style="font-size:0.8rem; font-weight:bold; padding-right:10px; color:#666;">${d.val}</span>` : 
+                    `<input type="number" step="0.1" class="weight-input" value="${d.val}" onchange="updateWeight(${d.s}, this.value)">`}
+                </div>`;
         }).join('') + `<p style="font-size: 0.65rem; color: #999; margin: 10px 15px;">* 보통(1.0) 대비 몇 배의 확률로 뽑을지 설정합니다.</p>`;
     }
-    function getBallColor(n) { if (n <= 10) return '#fbc400'; if (n <= 20) return '#69c8f2'; if (n <= 30) return '#ff7272'; if (n <= 40) return '#aaaaaa'; return '#b0d840'; }
+
     function initGrid() {
         const g = document.getElementById('grid');
         for(let i=1; i<=45; i++) {
-            const b = document.createElement('button'); b.id = 'n'+i; b.className = 'ball s0'; b.style.backgroundColor = getBallColor(i);
+            const b = document.createElement('button');
+            b.id = 'n'+i; b.className = 'ball s0'; b.style.backgroundColor = getBallColor(i);
             b.innerHTML = `<span class="ball-num">${i}</span><div class="ball-label" id="label-${i}"></div>`;
-            b.onclick = () => { states[i] = (states[i] + 1) % 7; b.className = 'ball s' + states[i]; b.style.backgroundColor = states[i] === 0 ? getBallColor(i) : ''; document.getElementById('label-'+i).innerHTML = getIcon(states[i]); };
+            b.onclick = () => {
+                states[i] = (states[i] + 1) % 7;
+                b.className = 'ball s' + states[i];
+                b.style.backgroundColor = states[i] === 0 ? getBallColor(i) : '';
+                document.getElementById('label-'+i).innerHTML = getIcon(states[i]);
+            };
             g.appendChild(b);
         }
     }
+
     function generate() {
-        const resDiv = document.getElementById('results'); const adArea = document.getElementById('ad-area'); const adLoader = document.getElementById('ad-loader');
+        const resDiv = document.getElementById('results');
         resDiv.innerHTML = ''; resDiv.style.display = 'flex';
         const fixed = states.map((s, i) => s === 6 ? i : null).filter(v => v);
+        
         if(fixed.length > 6) { alert("포함할 숫자는 6개 이하로 해주세요!"); return; }
+
         for(let g=0; g<5; g++) {
-            let picks = [...fixed].slice(0,6); let pool = [];
-            for(let i=1; i<=45; i++) { if(picks.includes(i) || states[i] === 1) continue; let w = Math.round(userWeights[states[i]] * 100); for(let j=0; j<w; j++) pool.push(i); }
-            while(picks.length < 6 && pool.length > 0) { const idx = Math.floor(Math.random()*pool.length); const pick = pool[idx]; picks.push(pick); pool = pool.filter(n => n !== pick); }
-            const row = document.createElement('div'); row.className = 'res-row';
-            row.innerHTML = `<div class="res-idx">#${g+1}</div><div class="res-ball-group">` + picks.sort((a,b)=>a-b).map(n => `<div class="res-ball" style="background:${getBallColor(n)}">${n}</div>`).join('') + `</div>`;
+            let picks = [...fixed].slice(0,6);
+            let pool = [];
+            for(let i=1; i<=45; i++) {
+                if(picks.includes(i) || states[i] === 1) continue;
+                let w = Math.round(userWeights[states[i]] * 100);
+                for(let j=0; j<w; j++) pool.push(i);
+            }
+            while(picks.length < 6 && pool.length > 0) {
+                const idx = Math.floor(Math.random()*pool.length);
+                const pick = pool[idx];
+                picks.push(pick);
+                pool = pool.filter(n => n !== pick);
+            }
+            const row = document.createElement('div');
+            row.className = 'res-row';
+            row.innerHTML = `
+                <div class="res-idx">#${g+1}</div>
+                <div class="res-ball-group">
+                    ${picks.sort((a,b)=>a-b).map(n => `<div class="res-ball" style="background:${getBallColor(n)}">${n}</div>`).join('')}
+                </div>`;
             resDiv.appendChild(row);
         }
-        adArea.style.display = 'block';
-        adLoader.innerHTML = `<a href="https://link.coupang.com/a/XXXXXX" target="_blank" referrerpolicy="unsafe-url"><img src="https://ads-partners.coupang.com/banners/XXXXXX?t=${new Date().getTime()}" alt="광고" style="width:100%; max-width:320px; border-radius:15px; display:block; margin: 0 auto;"></a>`;
         setTimeout(() => { window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }); }, 150);
     }
 
-    // 앱 실행 시 당첨 번호 가져오기 시작
     initGuide();
     initGrid();
     fetchLatestLotto(); 
