@@ -93,63 +93,43 @@
     let userWeights = [1.0, 0, 0.1, 0.5, 2.0, 10.0, 10000]; 
     const states = Array(46).fill(0);
 
-    // [추가] 최신 회차 계산 및 데이터 가져오기
-//    async function fetchLatestLotto() {
-//        const drawInfo = document.getElementById('draw-info');
-  //      const ballContainer = document.getElementById('live-balls');
-
- //       try {
-//           // 1. 현재 날짜 기준으로 대략적인 회차 계산 (861회차=2019-06-01 기준)
- ///           const baseDate = new Date('2019-06-01T20:45:00');
- //           const now = new Date();
- //           const diffWeeks = Math.floor((now - baseDate) / (7 * 24 * 60 * 60 * 1000));
-//            const estimatedDrwNo = 861 + diffWeeks;
-//
-//            // 2. 워커 호출
-  //          const response = await fetch(`${WORKER_URL}?drwNo=${estimatedDrwNo}`);
- //           const data = await response.json();
-
-////            // 3. 만약 해당 회차 결과가 아직 안 나왔다면 이전 회차 시도
-//            if (data.returnValue === "fail") {
-//                const prevResponse = await fetch(`${WORKER_URL}?drwNo=${estimatedDrwNo - 1}`);
-//                const prevData = await prevResponse.json();
-//                renderLiveBalls(prevData);
-//            } else {
-//                renderLiveBalls(data);
-//            }
-//        } catch (e) {
-//            drawInfo.innerText = "당첨 결과를 불러오지 못했습니다.";
-//            console.error(e);
-//        }
-//    }
     async function fetchLatestLotto() {
     const drawInfo = document.getElementById('draw-info');
+    const ballContainer = document.getElementById('live-balls');
+
     try {
-        const baseDate = new Date('2023-12-30T21:00:00'); 
+        // 1. 현재 날짜 기준 회차 계산 (매주 토요일 20:45분 기준 업데이트)
+        const baseDate = new Date('2023-12-30T21:00:00'); // 1100회차 기준
         const now = new Date();
         const diffWeeks = Math.floor((now - baseDate) / (7 * 24 * 60 * 60 * 1000));
         let targetDrwNo = 1100 + diffWeeks;
 
-        // 동행복권 API를 직접 찌르지 않고, 프록시 서비스를 경유합니다.
-        const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(`https://www.dhlottery.co.kr/common.do?method=getLottoNumber&drwNo=${targetDrwNo}`)}`;
+        // 2. AllOrigins 프록시를 사용하여 차단 우회
+        // 동행복권 API를 직접 호출하지 않고 AllOrigins를 거쳐서 가져옵니다.
+        const targetApi = `https://www.dhlottery.co.kr/common.do?method=getLottoNumber&drwNo=${targetDrwNo}`;
+        const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(targetApi)}`;
         
         const response = await fetch(proxyUrl);
-        const json = await response.json();
-        const data = JSON.parse(json.contents); // AllOrigins는 결과가 contents 안에 문자열로 들어있음
+        if (!response.ok) throw new Error('Proxy Server Error');
+        
+        const resData = await response.json();
+        // AllOrigins는 실제 데이터를 'contents'라는 문자열 안에 담아줍니다.
+        const data = JSON.parse(resData.contents);
 
         if (data.returnValue === "fail") {
-            const prevRes = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(`https://www.dhlottery.co.kr/common.do?method=getLottoNumber&drwNo=${targetDrwNo-1}`)}`);
-            const prevJson = await prevRes.json();
-            renderLiveBalls(JSON.parse(prevJson.contents));
+            // 이번 주 결과가 아직 안 나왔다면 이전 회차 다시 시도
+            const prevApi = `https://www.dhlottery.co.kr/common.do?method=getLottoNumber&drwNo=${targetDrwNo - 1}`;
+            const prevRes = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(prevApi)}`);
+            const prevResData = await prevRes.json();
+            renderLiveBalls(JSON.parse(prevResData.contents));
         } else {
             renderLiveBalls(data);
         }
     } catch (e) {
-        drawInfo.innerText = "당첨 결과 확인: 로또6/45 공식 홈페이지를 참고하세요.";
-        console.error(e);
+        drawInfo.innerText = "당첨 결과를 불러오지 못했습니다. (공식 홈페이지 참고)";
+        console.error("데이터 로드 실패:", e);
     }
 }
-
 
     function renderLiveBalls(data) {
         const drawInfo = document.getElementById('draw-info');
