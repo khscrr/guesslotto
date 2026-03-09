@@ -88,39 +88,56 @@
     let userWeights = [1.0, 0, 0.1, 0.5, 2.0, 10.0, 10000]; 
     const states = Array(46).fill(0);
 
-    async function fetchLatestLotto() {
-        const drawInfo = document.getElementById('draw-info');
+async function fetchLatestLotto() {
+    const drawInfo = document.getElementById('draw-info');
+    const ballContainer = document.getElementById('live-balls');
+
+    try {
+        // 1. 현재 회차 계산 (1100회차 = 2023-12-30 기준)
+        const baseDate = new Date('2023-12-30T21:00:00'); 
+        const now = new Date();
+        const diffWeeks = Math.floor((now - baseDate) / (7 * 24 * 60 * 60 * 1000));
+        let targetDrwNo = 1100 + diffWeeks;
+
+        // 2. AllOrigins 프록시를 통한 동행복권 API 호출
+        const targetApi = `https://www.dhlottery.co.kr/common.do?method=getLottoNumber&drwNo=${targetDrwNo}`;
+        // 캐시 방지를 위해 랜덤 쿼리 스트링(_=...)을 추가합니다.
+        const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(targetApi)}&_=${new Date().getTime()}`;
+        
+        const response = await fetch(proxyUrl);
+        if (!response.ok) throw new Error('프록시 응답 오류');
+        
+        const resData = await response.json();
+        
+        // [중요] AllOrigins는 결과값을 'contents'라는 필드에 담아 주는데, 
+        // 이게 가끔 '글자(String)'일 때가 있어서 안전하게 JSON으로 변환합니다.
+        let data;
         try {
-            const baseDate = new Date('2023-12-30T21:00:00'); // 1100회 기준
-            const now = new Date();
-            const diffWeeks = Math.floor((now - baseDate) / (7 * 24 * 60 * 60 * 1000));
-            let targetDrwNo = 1100 + diffWeeks;
-
-            const baseUrl = WORKER_URL.endsWith('/') ? WORKER_URL : WORKER_URL + '/';
-            const response = await fetch(`${baseUrl}?drwNo=${targetDrwNo}`);
-            
-            // 응답 텍스트를 먼저 받고 JSON으로 파싱 시도 (디버깅 용이)
-            const rawText = await response.text();
-            let data;
-            try {
-                data = JSON.parse(rawText);
-            } catch(e) {
-                throw new Error("JSON 파싱 실패");
-            }
-
-            if (data.returnValue === "success") {
-                renderLiveBalls(data);
-            } else {
-                // 이번 주 결과 미발표 시 이전 회차 시도
-                const prevRes = await fetch(`${baseUrl}?drwNo=${targetDrwNo - 1}`);
-                const prevData = await prevRes.json();
-                renderLiveBalls(prevData);
-            }
+            data = typeof resData.contents === 'string' ? JSON.parse(resData.contents) : resData.contents;
         } catch (e) {
-            drawInfo.innerText = "당첨 정보를 불러올 수 없습니다 (차단됨)";
-            console.error("Fetch Error:", e);
+            console.error("데이터 파싱 실패:", resData.contents);
+            throw new Error('데이터 구조 오류');
         }
+
+        // 3. 결과 확인 및 렌더링
+        if (data && data.returnValue === "success") {
+            renderLiveBalls(data);
+        } else {
+            // 이번 주 결과가 아직 안 나왔으면 이전 회차 시도
+            const prevApi = `https://www.dhlottery.co.kr/common.do?method=getLottoNumber&drwNo=${targetDrwNo - 1}`;
+            const prevProxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(prevApi)}`;
+            const prevResponse = await fetch(prevProxyUrl);
+            const prevResData = await prevResponse.json();
+            const prevData = typeof prevResData.contents === 'string' ? JSON.parse(prevResData.contents) : prevResData.contents;
+            renderLiveBalls(prevData);
+        }
+    } catch (e) {
+        drawInfo.innerText = "당첨 정보: 로또 공식 홈페이지 확인 필요";
+        console.error("에러 상세:", e);
+        // 만약 'Unexpected token O' 에러가 여기서 발생한다면 콘솔을 꼭 확인해야 합니다.
     }
+}
+
 
     function renderLiveBalls(data) {
         const drawInfo = document.getElementById('draw-info');
