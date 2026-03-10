@@ -277,12 +277,28 @@
             resDiv.appendChild(row);
         }
 
-        adArea.style.display = 'block';
-        adLoader.innerHTML = `
-            <a href="https://link.coupang.com/a/XXXXXX" target="_blank" referrerpolicy="unsafe-url">
-                <img src="https://ads-partners.coupang.com/banners/XXXXXX?t=${new Date().getTime()}" alt="광고" style="width:100%; max-width:320px; border-radius:15px; display:block; margin: 0 auto;">
-            </a>
-        `;
+//        adArea.style.display = 'block';
+//        adLoader.innerHTML = `
+//            <a href="https://link.coupang.com/a/XXXXXX" target="_blank" referrerpolicy="unsafe-url">
+//                <img src="https://ads-partners.coupang.com/banners/XXXXXX?t=${new Date().getTime()}" alt="광고" style="width:100%; max-width:320px; border-radius:15px; display:block; margin: 0 auto;">
+//            </a>
+//        `;
+        // [광고 영역 활성화 및 쿠팡 배너 주입]
+    adArea.style.display = 'block';
+    adLoader.innerHTML = `
+        <div style="display: flex; justify-content: center; width: 100%; overflow: hidden; border-radius: 15px;">
+            <iframe 
+                src="https://ads-partners.coupang.com/widgets.html?id=971378&template=carousel&trackingCode=AF6324812&subId=&width=320&height=100&tsource=" 
+                width="320" 
+                height="100" 
+                frameborder="0" 
+                scrolling="no" 
+                referrerpolicy="unsafe-url" 
+                browsingtopics
+                style="max-width: 100%;">
+            </iframe>
+        </div>
+    `; 
 
         setTimeout(() => { window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }); }, 150);
     }
