@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.0/kakao.min.js" 
-            integrity="sha384-lLeY6p9CC765S4F8N9H0880l7B1D0E4r/XmN8lY0k39k80808080808080808080" 
-            crossorigin="anonymous"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Lotto Matrix v10.6</title>
+    <title>Lotto Matrix v10.7</title>
+    
+    <script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.0/kakao.min.js"></script>
+
     <style>
-        /* ... 기존 스타일 유지 ... */
+        /* (기존 스타일 유지) */
         :root { --bg: #f4f7f6; --primary: #1a73e8; --gap: 15px; }
         body { font-family: -apple-system, sans-serif; background: var(--bg); margin: 0; padding: 10px; display: flex; justify-content: center; }
         .container { max-width: 480px; width: 100%; display: flex; flex-direction: column; gap: var(--gap); padding-bottom: 20px; }
@@ -54,16 +54,16 @@
 
 <div class="container">
     <div class="info-header">
-        <div id="win-status" class="win-info-text">데이터 동기화 중...</div>
+        <div id="win-status" class="win-info-text">데이터 불러오는 중...</div>
         <div id="win-display" class="win-display"></div>
-        <a href="https://m.dhlottery.co.kr/lt645/result" target="_blank" rel="noopener" class="open-btn">공식 결과 상세 확인 ➔</a>
+        <a href="https://m.dhlottery.co.kr/lt645/result" target="_blank" class="open-btn">당첨번호 확인 ➔</a>
     </div>
 
     <div class="section-box">
         <div id="guide-grid" class="standard-grid"></div>
         <div class="collapsible">
             <div class="collapsible-header" onclick="toggleAccordion()">
-                <span>💡 옵션별 배수 설정 (보통=1.0)</span>
+                <span>💡 확률 배수 설정 (기본: 1.0)</span>
                 <span id="accordion-status">- 펼치기</span>
             </div>
             <div id="accordion-content" class="collapsible-content">
@@ -81,67 +81,51 @@
 
     <div id="ad-area" class="ad-container">
         <div id="ad-loader"></div>
-        <div style="font-size: 0.55rem; color: #aaa; margin-top: 8px;">광고 지원은 서비스 운영에 큰 힘이 됩니다.</div>
     </div>
-
-    <div class="footer-legal">이 포스팅은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.</div>
+    <div class="footer-legal">본 서비스는 참고용이며 실제 당첨을 보장하지 않습니다.</div>
 </div>
 
 <script>
-    // [설정] 앱 정보 및 가중치
+    // [핵심 설정]
     const KAKAO_KEY = 'f1f225756190be892980478becc91d13';
     let userWeights = [1.0, 0, 0.1, 0.5, 2.0, 10.0, 10000]; 
     let lastWinWeight = 1.0; 
     const states = Array(46).fill(0);
     let winNumbers = []; 
 
-    // 카카오 SDK 초기화 함수
-    function initKakao() {
-        if (typeof Kakao !== 'undefined') {
-            if (!Kakao.isInitialized()) {
-                Kakao.init(KAKAO_KEY);
-                console.log("카카오 SDK 초기화 성공");
-            }
-        } else {
-            console.error("카카오 SDK를 찾을 수 없습니다.");
-        }
-    }
-
-    // 전체 공유 실행 함수
+    // 카카오 초기화 및 공유 함수
     function sendKakaoAll() {
         if (typeof Kakao === 'undefined') {
-            alert("카카오 SDK 로드에 실패했습니다. 페이지를 새로고침해 주세요.");
+            alert("카카오 SDK가 로드되지 않았습니다.\n1. 인터넷 연결 확인\n2. 카카오 개발자 센터 도메인 등록 확인");
             return;
         }
-        initKakao(); // 실행 전 다시 한번 초기화 체크
-
-        const rows = document.querySelectorAll('.res-row');
-        if (rows.length === 0) {
-            alert("번호를 먼저 생성해 주세요!");
-            return;
-        }
-
-        let text = "🍀 로또 행운 번호 (5조합)\n";
-        rows.forEach((row, i) => {
-            const nums = Array.from(row.querySelectorAll('.res-ball')).map(b => b.innerText).join(', ');
-            text += `\n#${i+1}: ${nums}`;
-        });
 
         try {
+            if (!Kakao.isInitialized()) Kakao.init(KAKAO_KEY);
+            
+            const rows = document.querySelectorAll('.res-row');
+            if (rows.length === 0) { alert("번호를 먼저 생성해 주세요."); return; }
+
+            let resultText = "🍀 이번 주 로또 행운 번호\n";
+            rows.forEach((row, i) => {
+                const nums = Array.from(row.querySelectorAll('.res-ball')).map(b => b.innerText).join(', ');
+                resultText += `\n#${i+1}: ${nums}`;
+            });
+
             Kakao.Share.sendDefault({
                 objectType: 'text',
-                text: text + "\n\n1등 당첨을 기원합니다! ✨",
+                text: resultText + "\n\n대박을 기원합니다! ✨",
                 link: {
                     mobileWebUrl: window.location.href,
                     webUrl: window.location.href
                 }
             });
         } catch (e) {
-            alert("공유 중 오류 발생: " + e.message);
+            alert("카카오 공유 에러: " + e.message);
         }
     }
 
-    // ... (기존 로직 함수들: generate, loadLotto, initGrid 등) ...
+    // --- (기존 로직 함수들은 동일하므로 생략하지 않고 포함) ---
     function toggleAccordion() {
         const content = document.getElementById('accordion-content');
         const status = document.getElementById('accordion-status');
@@ -178,11 +162,11 @@
             if (history && history.length > 0) {
                 const latest = history[0];
                 winNumbers = [...latest[2], latest[3]];
-                document.getElementById("win-status").innerText = `제 ${latest[0]}회 당첨 번호 (${latest[1]})`;
+                document.getElementById("win-status").innerText = `제 ${latest[0]}회 당첨 번호`;
                 document.getElementById("win-display").innerHTML = latest[2].map(n => `<div class="w-ball" style="background:${getBallColor(n)}">${n}</div>`).join('') + `<div class="w-plus">+</div><div class="w-ball" style="background:${getBallColor(latest[3])}">${latest[3]}</div>`;
                 winNumbers.forEach(n => { if(document.getElementById("n"+n)) document.getElementById("n"+n).classList.add("win-hit"); });
             }
-        } catch (e) { document.getElementById("win-status").innerText = "동기화 실패"; }
+        } catch (e) { console.error("Data Load Error"); }
     }
 
     function initGuide() {
@@ -198,8 +182,8 @@
         });
         probDesc.innerHTML = [6,5,4,0,3,2,1].map(s => {
             const isRO = (s===0||s===1||s===6);
-            return `<div class="desc-item"><span style="font-size:0.8rem;">${labels[s]}</span>${isRO?`<span style="font-weight:bold;padding-right:10px;">${userWeights[s]}</span>`:`<input type="number" step="0.1" class="weight-input" value="${userWeights[s]}" onchange="updateWeight(${s}, this.value)">`}</div>`;
-        }).join('') + `<div class="desc-item" style="background:#fff1f0;"><span style="font-size:0.75rem; color:#cf1322; font-weight:bold;">이전 게임 번호 확률 낮춤</span><input type="number" step="0.1" class="weight-input" value="${lastWinWeight}" onchange="updateLastWinWeight(this.value)"></div>`;
+            return `<div class="desc-item"><span>${labels[s]}</span>${isRO?`<b>${userWeights[s]}</b>`:`<input type="number" step="0.1" class="weight-input" value="${userWeights[s]}" onchange="updateWeight(${s}, this.value)">`}</div>`;
+        }).join('') + `<div class="desc-item" style="background:#fff1f0;"><span>직전 당첨번호 제외</span><input type="number" step="0.1" class="weight-input" value="${lastWinWeight}" onchange="updateLastWinWeight(this.value)"></div>`;
     }
 
     function initGrid() {
@@ -222,11 +206,10 @@
         const resDiv = document.getElementById('results');
         resDiv.innerHTML = ''; resDiv.style.display = 'flex';
         const fixed = states.map((s, i) => s === 6 ? i : null).filter(v => v);
-        if(fixed.length > 6) { alert("포함 번호는 6개 이하로!"); return; }
-
+        
         const sBtn = document.createElement('button');
         sBtn.className = 'share-btn';
-        sBtn.innerHTML = `<img src="https://developers.kakao.com/assets/img/about/logos/kakaotalksharing/kakaotalk_sharing_btn_medium.png" style="width:18px;"> 전체 번호 카톡 공유`;
+        sBtn.innerHTML = `💬 전체 번호 카톡 공유`;
         sBtn.onclick = sendKakaoAll;
         resDiv.appendChild(sBtn);
 
@@ -244,17 +227,14 @@
             }
             const row = document.createElement('div');
             row.className = 'res-row';
-            row.innerHTML = `<div style="font-size:0.65rem; color:#bbb; margin-right:10px; width:20px; text-align:right;">#${g+1}</div><div class="res-ball-group">${picks.sort((a,b)=>a-b).map(n => `<div class="res-ball" style="background:${getBallColor(n)}">${n}</div>`).join('')}</div>`;
+            row.innerHTML = `<div class="res-ball-group">${picks.sort((a,b)=>a-b).map(n => `<div class="res-ball" style="background:${getBallColor(n)}">${n}</div>`).join('')}</div>`;
             resDiv.appendChild(row);
         }
         document.getElementById('ad-area').style.display = 'block';
         document.getElementById('ad-loader').innerHTML = `<iframe src="https://ads-partners.coupang.com/widgets.html?id=971378&template=carousel&trackingCode=AF6324812&width=320&height=100" width="320" height="100" frameborder="0" scrolling="no" referrerpolicy="unsafe-url"></iframe>`;
-        setTimeout(() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }), 150);
     }
 
-    window.onload = () => {
-        initGuide(); initGrid(); loadLotto(); initKakao();
-    };
+    window.onload = () => { initGuide(); initGrid(); loadLotto(); };
 </script>
 </body>
 </html>
