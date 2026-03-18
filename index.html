@@ -138,9 +138,17 @@
                 const nums = Array.from(row.querySelectorAll('.res-ball')).map(b => b.innerText).join(', ');
                 txt += `\n#${i+1}: ${nums}`;
             });
+            // 고정된 전체 경로 설정
+            const fixedUrl = "https://khscrr.github.io/guesslotto/";
             Kakao.Share.sendDefault({
                 objectType: 'text', text: txt + "\n\n1등 기원! ✨",
-                link: { mobileWebUrl: window.location.href, webUrl: window.location.href }
+                //link: { mobileWebUrl: window.location.href, webUrl: window.location.href }
+                link: {
+                    mobileWebUrl: fixedUrl, // 도메인 뒤의 경로를 명시적으로 입력
+                    webUrl: fixedUrl
+                },
+                // 버튼의 링크도 동일하게 설정
+                buttons: [{ title: '번호 확인하러 가기', link: { mobileWebUrl: fixedUrl, webUrl: fixedUrl }}]
             });
         } catch (e) { alert("공유 오류: " + e.message); }
     }
