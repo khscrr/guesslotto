@@ -1,15 +1,17 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
+    <script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.0/kakao.min.js" integrity="sha384-lLeY6p9CC765S4F8N9H0880l7B1D0E4r/XmN8lY0k39k80808080808080808080" crossorigin="anonymous"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Lotto Matrix v10.2</title>
+    <title>Lotto Matrix v10.4</title>
     <style>
         :root { --bg: #f4f7f6; --primary: #1a73e8; --gap: 15px; }
         body { font-family: -apple-system, sans-serif; background: var(--bg); margin: 0; padding: 10px; display: flex; justify-content: center; }
         .container { max-width: 480px; width: 100%; display: flex; flex-direction: column; gap: var(--gap); padding-bottom: 20px; }
+        .section-box { background: white; padding: 15px; border-radius: 25px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); }
+        .standard-grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 6px; width: 100%; }
         
-        /* 헤더: 당첨 정보 */
         .info-header { background: #202124; padding: 15px; border-radius: 20px; text-align: center; color: white; }
         .win-info-text { font-size: 0.75rem; color: #999; margin-bottom: 8px; font-weight: bold; }
         .win-display { display: flex; justify-content: center; gap: 5px; align-items: center; margin-bottom: 12px; }
@@ -17,21 +19,12 @@
         .w-plus { font-size: 1rem; font-weight: bold; color: #555; }
         .open-btn { display: block; background: #34a853; color: white; text-decoration: none; padding: 10px; border-radius: 12px; font-size: 0.85rem; font-weight: bold; }
 
-        /* 그리드 및 공 스타일 */
-        .section-box { background: white; padding: 15px; border-radius: 25px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); }
-        .standard-grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 6px; width: 100%; }
-        .ball, .guide-ball { 
-            aspect-ratio: 1; border-radius: 50%; border: 1px solid rgba(0,0,0,0.08); 
-            display: flex; align-items: center; justify-content: center;
-            transition: 0.2s; position: relative; width: 100%; overflow: hidden;
-            background-color: #eee;
-        }
+        .ball, .guide-ball { aspect-ratio: 1; border-radius: 50%; border: 1px solid rgba(0,0,0,0.08); display: flex; align-items: center; justify-content: center; transition: 0.2s; position: relative; width: 100%; overflow: hidden; background-color: #eee; }
         .ball { cursor: pointer; border: none; }
         .ball-num { position: absolute; font-weight: 800; font-size: 0.9rem; z-index: 1; transition: 0.2s; color: rgba(0,0,0,0.8); }
         .ball-label { position: relative; z-index: 2; display: none; width: 100%; height: 100%; align-items: center; justify-content: center; }
         .ball.win-hit { border: 2.5px solid #ff9900 !important; box-shadow: 0 0 10px rgba(255, 204, 0, 0.5); z-index: 5; }
 
-        /* 상태별 색상 (s0~s6) */
         .ball:not(.s0) .ball-num { opacity: 0.15; }
         .ball:not(.s0) .ball-label { display: flex; }
         .s1 { background-color: #333 !important; color: #fff; }
@@ -41,26 +34,23 @@
         .s5 { background-color: #fbc400 !important; border: 2px solid #000; color: #fff; }
         .s6 { background-color: #ef5350 !important; border: 2.5px solid #ef5350; color: #fff; }
 
-        /* 아이콘 및 텍스트 */
         .icon-svg { width: 65%; height: 65%; fill: none; stroke: currentColor; stroke-width: 3.5; stroke-linecap: round; stroke-linejoin: round; }
-        .mini-icon { width: 12px; height: 12px; margin-left: 2px; vertical-align: middle; }
         .txt-label { font-size: 0.65rem; font-weight: 900; white-space: nowrap; transform: scaleX(0.85); fill: currentColor; }
 
-        /* 아코디언 옵션 */
-        .collapsible { background: #f8f9fa; border-radius: 15px; margin-top: 10px; overflow: hidden; border: 1px solid #eee; }
-        .collapsible-header { padding: 10px 15px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; background: #f1f3f4; font-size: 0.8rem; font-weight: bold; }
-        .collapsible-content { max-height: 0; overflow: hidden; transition: max-height 0.35s ease; background: #fff; }
-        .desc-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 15px; border-bottom: 1px solid rgba(0,0,0,0.03); }
-        .weight-input { width: 60px; padding: 6px; border: 1px solid #ddd; border-radius: 8px; text-align: right; font-size: 0.8rem; font-weight: bold; color: var(--primary); }
-        .penalty-row { background: #fff1f0; border-top: 2px solid #ffccc7 !important; }
-
-        /* 버튼 및 결과 */
         .gen-btn { width: 100%; padding: 20px; background: var(--primary); color: white; border: none; border-radius: 20px; font-size: 1.1rem; font-weight: bold; cursor: pointer; }
+        .share-btn { width: 100%; padding: 12px; background: #FEE500; color: #3c1e1e; border: none; border-radius: 15px; font-size: 0.9rem; font-weight: bold; cursor: pointer; margin-bottom: 15px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        
         #results { padding: 20px 10px; background: #fffbe6; border-radius: 20px; border: 1px dashed #ffd666; display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
         .res-row { display: flex; align-items: center; justify-content: center; width: 100%; }
         .res-ball-group { display: flex; gap: 6px; }
         .res-ball { width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 1.05rem; box-shadow: 0 3px 6px rgba(0,0,0,0.1); }
         
+        .collapsible { background: #f8f9fa; border-radius: 15px; margin-top: 10px; overflow: hidden; border: 1px solid #eee; }
+        .collapsible-header { padding: 10px 15px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; background: #f1f3f4; font-size: 0.8rem; font-weight: bold; }
+        .collapsible-content { max-height: 0; overflow: hidden; transition: max-height 0.35s ease; background: #fff; }
+        .desc-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 15px; border-bottom: 1px solid rgba(0,0,0,0.03); }
+        .weight-input { width: 60px; padding: 6px; border: 1px solid #ddd; border-radius: 8px; text-align: right; font-size: 0.8rem; font-weight: bold; color: var(--primary); }
+
         .ad-container { display: none; width: 100%; text-align: center; background: white; padding: 15px; border-radius: 25px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); margin-top: 15px; }
         .footer-legal { text-align: center; font-size: 0.6rem; color: #bbb; padding: 10px 0; line-height: 1.4; }
     </style>
@@ -99,9 +89,7 @@
         <div style="font-size: 0.55rem; color: #aaa; margin-top: 8px;">광고 지원은 서비스 운영에 큰 힘이 됩니다.</div>
     </div>
 
-    <div class="footer-legal">
-        이 포스팅은 쿠팡 파트너스 활동의 일환으로,<br>이에 따른 일정액의 수수료를 제공받습니다.
-    </div>
+    <div class="footer-legal">이 포스팅은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.</div>
 </div>
 
 <script>
@@ -109,35 +97,58 @@
     let lastWinWeight = 1.0; 
     const states = Array(46).fill(0);
     let winNumbers = []; 
-    let currentServerRound = 0;
 
-    // UI 제어
+    // 카카오 JavaScript 키 적용됨
+    const KAKAO_KEY = 'f1f225756190be892980478becc91d13';
+    try {
+        if (KAKAO_KEY && !Kakao.isInitialized()) {
+            Kakao.init(KAKAO_KEY);
+        }
+    } catch(e) { console.error("Kakao Init Error:", e); }
+
+    function sendKakaoAll() {
+        if (!Kakao.isInitialized()) {
+            alert("카카오 키가 설정되지 않았거나 도메인이 등록되지 않았습니다.");
+            return;
+        }
+        const rows = document.querySelectorAll('.res-row');
+        if (rows.length === 0) return;
+
+        let text = "🍀 이번 주 로또 행운 번호\n";
+        rows.forEach((row, i) => {
+            const nums = Array.from(row.querySelectorAll('.res-ball')).map(b => b.innerText).join(', ');
+            text += `\n#${i+1}: ${nums}`;
+        });
+
+        Kakao.Share.sendDefault({
+            objectType: 'text',
+            text: text + "\n\n1등 당첨을 기원합니다! ✨",
+            link: {
+                mobileWebUrl: window.location.href,
+                webUrl: window.location.href
+            }
+        });
+    }
+
     function toggleAccordion() {
         const content = document.getElementById('accordion-content');
         const status = document.getElementById('accordion-status');
-        if (content.style.maxHeight && content.style.maxHeight !== '0px') {
-            content.style.maxHeight = '0px';
-            status.innerText = "- 펼치기";
-        } else {
-            content.style.maxHeight = content.scrollHeight + "px";
-            status.innerText = "- 접기";
-        }
+        content.style.maxHeight = (content.style.maxHeight && content.style.maxHeight !== '0px') ? '0px' : content.scrollHeight + "px";
+        status.innerText = content.style.maxHeight === '0px' ? "- 펼치기" : "- 접기";
     }
 
     function updateWeight(index, value) { userWeights[index] = parseFloat(value) || 0; }
     function updateLastWinWeight(value) { lastWinWeight = parseFloat(value) || 0; }
 
-    function getIcon(state, isMini = false) {
-        const cls = isMini ? "icon-svg mini-icon" : "icon-svg";
-        const svgStart = `<svg class="${cls}" viewBox="0 0 24 24">`;
-        const svgEnd = `</svg>`;
+    function getIcon(state) {
+        const svg = `<svg class="icon-svg" viewBox="0 0 24 24">`;
         switch(state) {
-            case 1: return isMini ? "" : `<span class="txt-label">제외</span>`;
-            case 2: return svgStart + `<path d="M7 7l5 5 5-5M7 14l5 5 5-5"/>` + svgEnd;
-            case 3: return svgStart + `<path d="M7 10l5 5 5-5"/>` + svgEnd;
-            case 4: return svgStart + `<path d="M7 14l5-5 5 5"/>` + svgEnd;
-            case 5: return svgStart + `<path d="M7 10l5-5 5 5M7 17l5-5 5 5"/>` + svgEnd;
-            case 6: return isMini ? "" : `<span class="txt-label">포함</span>`;
+            case 1: return `<span class="txt-label">제외</span>`;
+            case 2: return svg + `<path d="M7 7l5 5 5-5M7 14l5 5 5-5"/></svg>`;
+            case 3: return svg + `<path d="M7 10l5 5 5-5"/></svg>`;
+            case 4: return svg + `<path d="M7 14l5-5 5 5"/></svg>`;
+            case 5: return svg + `<path d="M7 10l5-5 5 5M7 17l5-5 5 5"/></svg>`;
+            case 6: return `<span class="txt-label">포함</span>`;
             default: return "";
         }
     }
@@ -148,101 +159,46 @@
         return '#b0d840';
     }
 
-    // 서버 데이터 로드 및 최신화 확인
     async function loadLotto() {
-        const statusEl = document.getElementById("win-status");
-        const winDisplay = document.getElementById("win-display");
-
         try {
             const res = await fetch(`https://lottowrk.khscrr.workers.dev/?action=history`);
             const history = await res.json();
-
             if (history && history.length > 0) {
-                const latest = history[0]; 
-                currentServerRound = latest[0];
-                const sDate = latest[1] || "";
-                const sNums = latest[2];
-                const sBonus = latest[3];
-                winNumbers = [...sNums, sBonus];
-
-                // 동기화 체크 (토요일 밤 10시 기준)
-                const now = new Date();
-                const day = now.getDay(); 
-                const hour = now.getHours();
-                let syncNotice = "";
-                const baseDate = new Date("2026-03-14"); // 1215회 기준
-                const weeksPassed = Math.floor((now - baseDate) / (7 * 24 * 60 * 60 * 1000));
-                const expectedRound = 1215 + weeksPassed;
-
-                if ((day === 6 && hour >= 22 && currentServerRound < expectedRound) || (day === 0 && currentServerRound < expectedRound)) {
-                    syncNotice = " <span style='color:#ff4d4f; font-weight:bold;'>[⚠️ 서버 업데이트 지연 중]</span>";
-                }
-
-                statusEl.innerHTML = `제 ${currentServerRound}회 당첨 번호 (${sDate})${syncNotice}`;
-                winDisplay.innerHTML = sNums.map(n => `<div class="w-ball" style="background:${getBallColor(n)}">${n}</div>`).join('') + `<div class="w-plus">+</div>` + `<div class="w-ball" style="background:${getBallColor(sBonus)}">${sBonus}</div>`;
-
-                winNumbers.forEach(n => {
-                    const el = document.getElementById("n" + n);
-                    if (el) el.classList.add("win-hit");
-                });
+                const latest = history[0];
+                winNumbers = [...latest[2], latest[3]];
+                document.getElementById("win-status").innerText = `제 ${latest[0]}회 당첨 번호 (${latest[1]})`;
+                document.getElementById("win-display").innerHTML = latest[2].map(n => `<div class="w-ball" style="background:${getBallColor(n)}">${n}</div>`).join('') + `<div class="w-plus">+</div><div class="w-ball" style="background:${getBallColor(latest[3])}">${latest[3]}</div>`;
+                winNumbers.forEach(n => { if(document.getElementById("n"+n)) document.getElementById("n"+n).classList.add("win-hit"); });
             }
-        } catch (e) {
-            statusEl.innerText = "서버 연결 실패 (네트워크 확인)";
-        }
+        } catch (e) { document.getElementById("win-status").innerText = "동기화 실패"; }
     }
 
-    // 초기화 함수들
     function initGuide() {
         const guideGrid = document.getElementById('guide-grid');
         const probDesc = document.getElementById('probability-desc');
         const labels = ["보통", "제외", "확률", "확률", "확률", "확률", "포함"];
-        const descData = [
-            { s: 6, txt: "포함", val: "무조건", readonly: true },
-            { s: 5, txt: "확률", val: userWeights[5] },
-            { s: 4, txt: "확률", val: userWeights[4] },
-            { s: 0, txt: "보통", val: userWeights[0], readonly: true },
-            { s: 3, txt: "확률", val: userWeights[3] },
-            { s: 2, txt: "확률", val: userWeights[2] },
-            { s: 1, txt: "제외", val: "0", readonly: true }
-        ];
-        
         guideGrid.innerHTML = '';
-        for(let i=0; i<=6; i++) {
+        [0, 1, 2, 3, 4, 5, 6].forEach(i => {
             const wrapper = document.createElement('div');
-            wrapper.className = 'g-item-wrapper';
-            const mini = (i >= 2 && i <= 5) ? getIcon(i, true) : "";
             wrapper.style = "display:flex; flex-direction:column; align-items:center; gap:4px;";
-            wrapper.innerHTML = `<div class="guide-ball s${i}"><span class="ball-num">45</span><div class="ball-label" style="${i===0?'display:none':'display:flex'}">${getIcon(i)}</div></div><span style="font-size:0.42rem; font-weight:bold; color:#999;">${labels[i]}${mini}</span>`;
+            wrapper.innerHTML = `<div class="guide-ball s${i}"><span class="ball-num">45</span><div class="ball-label" style="${i===0?'display:none':'display:flex'}">${getIcon(i)}</div></div><span style="font-size:0.42rem; font-weight:bold; color:#999;">${labels[i]}</span>`;
             guideGrid.appendChild(wrapper);
-        }
-
-        probDesc.innerHTML = descData.map(d => {
-            const mini = (d.s >= 2 && d.s <= 5) ? getIcon(d.s, true) : "";
-            const labelText = d.s === 0 || d.s === 1 || d.s === 6 ? d.txt : `${d.txt}${mini}`;
-            return `<div class="desc-item">
-                <span style="font-size:0.8rem; color:#444;">${labelText}</span>
-                ${d.readonly ? `<span style="font-size:0.8rem; font-weight:bold; padding-right:10px; color:#666;">${d.val}</span>` : 
-                `<input type="number" step="0.1" class="weight-input" value="${d.val}" onchange="updateWeight(${d.s}, this.value)">`}
-            </div>`;
-        }).join('') + `
-            <div class="desc-item penalty-row">
-                <span style="font-size:0.75rem; color:#cf1322; font-weight:bold;">이전 게임 선택 번호들의 확률을 낮춤</span>
-                <input type="number" step="0.1" class="weight-input" style="color:#cf1322; border-color:#ffa39e;" value="${lastWinWeight}" onchange="updateLastWinWeight(this.value)">
-            </div>`;
+        });
+        probDesc.innerHTML = [6,5,4,0,3,2,1].map(s => {
+            const isRO = (s===0||s===1||s===6);
+            return `<div class="desc-item"><span style="font-size:0.8rem;">${labels[s]}</span>${isRO?`<span style="font-weight:bold;padding-right:10px;">${userWeights[s]}</span>`:`<input type="number" step="0.1" class="weight-input" value="${userWeights[s]}" onchange="updateWeight(${s}, this.value)">`}</div>`;
+        }).join('') + `<div class="desc-item" style="background:#fff1f0;"><span style="font-size:0.75rem; color:#cf1322; font-weight:bold;">이전 게임 번호 확률 낮춤</span><input type="number" step="0.1" class="weight-input" value="${lastWinWeight}" onchange="updateLastWinWeight(this.value)"></div>`;
     }
 
     function initGrid() {
         const g = document.getElementById('grid');
-        g.innerHTML = '';
         for(let i=1; i<=45; i++) {
             const b = document.createElement('button');
-            b.id = 'n'+i; b.className = 'ball s0';
-            b.style.backgroundColor = getBallColor(i);
+            b.id = 'n'+i; b.className = 'ball s0'; b.style.backgroundColor = getBallColor(i);
             b.innerHTML = `<span class="ball-num">${i}</span><div class="ball-label" id="label-${i}"></div>`;
             b.onclick = () => {
                 states[i] = (states[i] + 1) % 7;
-                const isWin = b.classList.contains('win-hit');
-                b.className = 'ball s' + states[i] + (isWin ? ' win-hit' : '');
+                b.className = 'ball s' + states[i] + (b.classList.contains('win-hit') ? ' win-hit' : '');
                 b.style.backgroundColor = states[i] === 0 ? getBallColor(i) : '';
                 document.getElementById('label-'+i).innerHTML = getIcon(states[i]);
             };
@@ -252,47 +208,39 @@
 
     function generate() {
         const resDiv = document.getElementById('results');
-        const adArea = document.getElementById('ad-area');
-        const adLoader = document.getElementById('ad-loader');
-
         resDiv.innerHTML = ''; resDiv.style.display = 'flex';
         const fixed = states.map((s, i) => s === 6 ? i : null).filter(v => v);
-        if(fixed.length > 6) { alert("포함할 숫자는 6개 이하로 해주세요!"); return; }
+        if(fixed.length > 6) { alert("포함 번호는 6개 이하로!"); return; }
+
+        const sBtn = document.createElement('button');
+        sBtn.className = 'share-btn';
+        sBtn.innerHTML = `<img src="https://developers.kakao.com/assets/img/about/logos/kakaotalksharing/kakaotalk_sharing_btn_medium.png" style="width:18px;"> 전체 번호 카톡 공유`;
+        sBtn.onclick = sendKakaoAll;
+        resDiv.appendChild(sBtn);
 
         for(let g=0; g<5; g++) {
-            let picks = [...fixed].slice(0,6);
+            let picks = [...fixed];
             let pool = [];
             for(let i=1; i<=45; i++) {
                 if(picks.includes(i) || states[i] === 1) continue;
-                let finalWeight = userWeights[states[i]];
-                if(states[i] === 0 && winNumbers.includes(i)) finalWeight = lastWinWeight;
-                let w = Math.round(finalWeight * 100); 
-                for(let j=0; j<w; j++) pool.push(i); 
+                let w = Math.round((states[i] === 0 && winNumbers.includes(i) ? lastWinWeight : userWeights[states[i]]) * 100);
+                for(let j=0; j<w; j++) pool.push(i);
             }
             while(picks.length < 6 && pool.length > 0) {
-                const idx = Math.floor(Math.random()*pool.length);
-                const pick = pool[idx]; picks.push(pick);
-                pool = pool.filter(n => n !== pick);
+                const p = pool[Math.floor(Math.random()*pool.length)];
+                picks.push(p); pool = pool.filter(n => n !== p);
             }
-            
             const row = document.createElement('div');
             row.className = 'res-row';
-            row.innerHTML = `<div style="font-size:0.65rem; font-weight:bold; color:#bbb; margin-right:10px; width:20px; text-align:right;">#${g+1}</div>` + 
-                            `<div class="res-ball-group">` + 
-                            picks.sort((a,b)=>a-b).map(n => `<div class="res-ball" style="background:${getBallColor(n)}">${n}</div>`).join('') +
-                            `</div>`;
+            row.innerHTML = `<div style="font-size:0.65rem; color:#bbb; margin-right:10px; width:20px; text-align:right;">#${g+1}</div><div class="res-ball-group">${picks.sort((a,b)=>a-b).map(n => `<div class="res-ball" style="background:${getBallColor(n)}">${n}</div>`).join('')}</div>`;
             resDiv.appendChild(row);
         }
-
-        adArea.style.display = 'block';
-        adLoader.innerHTML = `<div style="display:flex; justify-content:center; width:100%; overflow:hidden; border-radius:15px;"><iframe src="https://ads-partners.coupang.com/widgets.html?id=971378&template=carousel&trackingCode=AF6324812&width=320&height=100" width="320" height="100" frameborder="0" scrolling="no" referrerpolicy="unsafe-url" style="max-width:100%;"></iframe></div>`;
-
-        setTimeout(() => { window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }); }, 150);
+        document.getElementById('ad-area').style.display = 'block';
+        document.getElementById('ad-loader').innerHTML = `<iframe src="https://ads-partners.coupang.com/widgets.html?id=971378&template=carousel&trackingCode=AF6324812&width=320&height=100" width="320" height="100" frameborder="0" scrolling="no" referrerpolicy="unsafe-url"></iframe>`;
+        setTimeout(() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }), 150);
     }
 
-    initGuide();
-    initGrid();
-    loadLotto();
+    initGuide(); initGrid(); loadLotto();
 </script>
 </body>
 </html>
