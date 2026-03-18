@@ -106,33 +106,57 @@
         }
     } catch(e) { console.error("Kakao Init Error:", e); }
 
+// 스크립트 부분의 sendKakaoAll 함수만 이 내용으로 교체해 보세요.
 function sendKakaoAll() {
-    if (!Kakao.isInitialized()) {
-        alert("카카오 초기화 실패!");
+    // 1. 초기화 상태 체크
+    if (typeof Kakao === 'undefined') {
+        alert("카카오 SDK 로드 실패! 인터넷 연결을 확인하세요.");
         return;
     }
+    
+    if (!Kakao.isInitialized()) {
+        try {
+            Kakao.init('f1f225756190be892980478becc91d13');
+            console.log("카카오 키 재초기화 완료");
+        } catch (e) {
+            alert("초기화 오류: " + e.message);
+            return;
+        }
+    }
+
     const rows = document.querySelectorAll('.res-row');
     if (rows.length === 0) {
         alert("먼저 번호를 생성해 주세요!");
         return;
     }
 
+    // 2. 메시지 구성
     let text = "🍀 이번 주 로또 행운 번호\n";
     rows.forEach((row, i) => {
         const nums = Array.from(row.querySelectorAll('.res-ball')).map(b => b.innerText).join(', ');
         text += `\n#${i+1}: ${nums}`;
     });
 
-    Kakao.Share.sendDefault({
-        objectType: 'text',
-        text: text + "\n\n1등 당첨을 기원합니다! ✨",
-        link: {
-            mobileWebUrl: window.location.href, // 모바일용 주소 추가
-            webUrl: window.location.href       // PC용 주소
-        }
-    });
+    // 3. 공유 실행 및 결과 확인
+    try {
+        Kakao.Share.sendDefault({
+            objectType: 'text',
+            text: text + "\n\n1등 당첨을 기원합니다! ✨",
+            link: {
+                mobileWebUrl: window.location.href,
+                webUrl: window.location.href
+            },
+            callback: function() {
+                alert("공유창이 성공적으로 열렸습니다!");
+            }
+        });
+        // 실행 직후 알림 (함수가 실행되었는지 확인용)
+        console.log("Kakao.Share.sendDefault 호출됨");
+    } catch (err) {
+        alert("공유 실행 중 에러 발생: " + err.message);
+    }
 }
-
+ 
 
     function toggleAccordion() {
         const content = document.getElementById('accordion-content');
