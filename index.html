@@ -3,12 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Lotto Matrix v9.6</title>
+    <title>Lotto Matrix v10.2</title>
     <style>
         :root { --bg: #f4f7f6; --primary: #1a73e8; --gap: 15px; }
         body { font-family: -apple-system, sans-serif; background: var(--bg); margin: 0; padding: 10px; display: flex; justify-content: center; }
         .container { max-width: 480px; width: 100%; display: flex; flex-direction: column; gap: var(--gap); padding-bottom: 20px; }
         
+        /* 헤더: 당첨 정보 */
         .info-header { background: #202124; padding: 15px; border-radius: 20px; text-align: center; color: white; }
         .win-info-text { font-size: 0.75rem; color: #999; margin-bottom: 8px; font-weight: bold; }
         .win-display { display: flex; justify-content: center; gap: 5px; align-items: center; margin-bottom: 12px; }
@@ -16,13 +17,9 @@
         .w-plus { font-size: 1rem; font-weight: bold; color: #555; }
         .open-btn { display: block; background: #34a853; color: white; text-decoration: none; padding: 10px; border-radius: 12px; font-size: 0.85rem; font-weight: bold; }
 
-        .ball.win-hit { border: 2.5px solid #ff9900 !important; box-shadow: 0 0 10px rgba(255, 204, 0, 0.5); z-index: 5; }
-
+        /* 그리드 및 공 스타일 */
         .section-box { background: white; padding: 15px; border-radius: 25px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); }
         .standard-grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 6px; width: 100%; }
-        .g-item-wrapper { display: flex; flex-direction: column; align-items: center; gap: 4px; }
-        .g-text { font-size: 0.42rem; font-weight: bold; color: #999; text-align: center; white-space: nowrap; }
-
         .ball, .guide-ball { 
             aspect-ratio: 1; border-radius: 50%; border: 1px solid rgba(0,0,0,0.08); 
             display: flex; align-items: center; justify-content: center;
@@ -32,14 +29,11 @@
         .ball { cursor: pointer; border: none; }
         .ball-num { position: absolute; font-weight: 800; font-size: 0.9rem; z-index: 1; transition: 0.2s; color: rgba(0,0,0,0.8); }
         .ball-label { position: relative; z-index: 2; display: none; width: 100%; height: 100%; align-items: center; justify-content: center; }
+        .ball.win-hit { border: 2.5px solid #ff9900 !important; box-shadow: 0 0 10px rgba(255, 204, 0, 0.5); z-index: 5; }
 
-        .icon-svg { width: 65%; height: 65%; fill: none; stroke: currentColor; stroke-width: 3.5; stroke-linecap: round; stroke-linejoin: round; }
-        .mini-icon { width: 12px; height: 12px; margin-left: 2px; vertical-align: middle; stroke-width: 4; }
-        .txt-label { font-size: 0.65rem; letter-spacing: -1.2px; font-weight: 900; white-space: nowrap; transform: scaleX(0.85); fill: currentColor; }
-
-        .ball:not(.s0) .ball-num, .guide-ball:not(.s0) .ball-num { opacity: 0.15; }
-        .ball:not(.s0) .ball-label, .guide-ball:not(.s0) .ball-label { display: flex; }
-
+        /* 상태별 색상 (s0~s6) */
+        .ball:not(.s0) .ball-num { opacity: 0.15; }
+        .ball:not(.s0) .ball-label { display: flex; }
         .s1 { background-color: #333 !important; color: #fff; }
         .s2 { background-color: #cfd8dc !important; color: #444; } 
         .s3 { background-color: #eceff1 !important; color: #666; }
@@ -47,33 +41,35 @@
         .s5 { background-color: #fbc400 !important; border: 2px solid #000; color: #fff; }
         .s6 { background-color: #ef5350 !important; border: 2.5px solid #ef5350; color: #fff; }
 
-        .collapsible { background: #f8f9fa; border-radius: 15px; margin-top: 10px; overflow: hidden; border: 1px solid #eee; }
-        .collapsible-header { padding: 10px 15px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; background: #f1f3f4; }
-        .collapsible-header span { font-size: 0.8rem; font-weight: bold; color: #555; }
-        .collapsible-content { max-height: 0; overflow: hidden; transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1); background: #fff; }
-        .desc-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 15px; border-bottom: 1px solid rgba(0,0,0,0.03); }
-        .weight-input { width: 60px; padding: 6px; border: 1px solid #ddd; border-radius: 8px; text-align: right; font-size: 0.8rem; font-weight: bold; color: var(--primary); outline: none; }
-        
-        .penalty-row { background: #fff1f0; border-top: 2px solid #ffccc7 !important; border-bottom: none !important; }
-        .priority-tip { font-size: 0.62rem; color: #999; padding: 5px 15px 10px 15px; background: #fff1f0; margin: 0; }
+        /* 아이콘 및 텍스트 */
+        .icon-svg { width: 65%; height: 65%; fill: none; stroke: currentColor; stroke-width: 3.5; stroke-linecap: round; stroke-linejoin: round; }
+        .mini-icon { width: 12px; height: 12px; margin-left: 2px; vertical-align: middle; }
+        .txt-label { font-size: 0.65rem; font-weight: 900; white-space: nowrap; transform: scaleX(0.85); fill: currentColor; }
 
-        .gen-btn { width: 100%; padding: 20px; background: var(--primary); color: white; border: none; border-radius: 20px; font-size: 1.1rem; font-weight: bold; cursor: pointer; margin: 0; }
-        #results { padding: 20px 10px; background: #fffbe6; border-radius: 20px; border: 1px dashed #ffd666; display: flex; flex-direction: column; align-items: center; gap: 10px; }
-        .res-row { display: flex; align-items: center; justify-content: center; width: 100%; padding: 5px 0; }
-        .res-idx { font-size: 0.65rem; font-weight: bold; color: #bbb; margin-right: 10px; width: 20px; text-align: right; }
+        /* 아코디언 옵션 */
+        .collapsible { background: #f8f9fa; border-radius: 15px; margin-top: 10px; overflow: hidden; border: 1px solid #eee; }
+        .collapsible-header { padding: 10px 15px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; background: #f1f3f4; font-size: 0.8rem; font-weight: bold; }
+        .collapsible-content { max-height: 0; overflow: hidden; transition: max-height 0.35s ease; background: #fff; }
+        .desc-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 15px; border-bottom: 1px solid rgba(0,0,0,0.03); }
+        .weight-input { width: 60px; padding: 6px; border: 1px solid #ddd; border-radius: 8px; text-align: right; font-size: 0.8rem; font-weight: bold; color: var(--primary); }
+        .penalty-row { background: #fff1f0; border-top: 2px solid #ffccc7 !important; }
+
+        /* 버튼 및 결과 */
+        .gen-btn { width: 100%; padding: 20px; background: var(--primary); color: white; border: none; border-radius: 20px; font-size: 1.1rem; font-weight: bold; cursor: pointer; }
+        #results { padding: 20px 10px; background: #fffbe6; border-radius: 20px; border: 1px dashed #ffd666; display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
+        .res-row { display: flex; align-items: center; justify-content: center; width: 100%; }
         .res-ball-group { display: flex; gap: 6px; }
-        .res-ball { width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 1.05rem; box-shadow: 0 3px 6px rgba(0,0,0,0.1); border: 1px solid rgba(0,0,0,0.1); }
+        .res-ball { width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 1.05rem; box-shadow: 0 3px 6px rgba(0,0,0,0.1); }
         
-        .ad-container { display: none; width: 100%; text-align: center; background: white; padding: 15px; border-radius: 25px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); box-sizing: border-box; }
-        .ad-helper-text { font-size: 0.55rem; color: #aaa; margin-top: 8px; }
-        .footer-legal { text-align: center; font-size: 0.6rem; color: #bbb; padding: 10px 0 0 0; line-height: 1.4; }
+        .ad-container { display: none; width: 100%; text-align: center; background: white; padding: 15px; border-radius: 25px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); margin-top: 15px; }
+        .footer-legal { text-align: center; font-size: 0.6rem; color: #bbb; padding: 10px 0; line-height: 1.4; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <div class="info-header">
-        <div id="win-status" class="win-info-text">최신 당첨 번호 불러오는 중...</div>
+        <div id="win-status" class="win-info-text">데이터 동기화 중...</div>
         <div id="win-display" class="win-display"></div>
         <a href="https://m.dhlottery.co.kr/lt645/result" target="_blank" rel="noopener" class="open-btn">공식 결과 상세 확인 ➔</a>
     </div>
@@ -96,12 +92,11 @@
     </div>
 
     <button class="gen-btn" onclick="generate()">🎲 예측 번호 생성</button>
-    
     <div id="results" style="display:none;"></div>
 
     <div id="ad-area" class="ad-container">
         <div id="ad-loader"></div>
-        <div class="ad-helper-text">광고 지원은 서비스 운영에 큰 힘이 됩니다.</div>
+        <div style="font-size: 0.55rem; color: #aaa; margin-top: 8px;">광고 지원은 서비스 운영에 큰 힘이 됩니다.</div>
     </div>
 
     <div class="footer-legal">
@@ -114,7 +109,9 @@
     let lastWinWeight = 1.0; 
     const states = Array(46).fill(0);
     let winNumbers = []; 
+    let currentServerRound = 0;
 
+    // UI 제어
     function toggleAccordion() {
         const content = document.getElementById('accordion-content');
         const status = document.getElementById('accordion-status');
@@ -145,6 +142,56 @@
         }
     }
 
+    function getBallColor(n) {
+        if (n <= 10) return '#fbc400'; if (n <= 20) return '#69c8f2';
+        if (n <= 30) return '#ff7272'; if (n <= 40) return '#aaaaaa';
+        return '#b0d840';
+    }
+
+    // 서버 데이터 로드 및 최신화 확인
+    async function loadLotto() {
+        const statusEl = document.getElementById("win-status");
+        const winDisplay = document.getElementById("win-display");
+
+        try {
+            const res = await fetch(`https://lottowrk.khscrr.workers.dev/?action=history`);
+            const history = await res.json();
+
+            if (history && history.length > 0) {
+                const latest = history[0]; 
+                currentServerRound = latest[0];
+                const sDate = latest[1] || "";
+                const sNums = latest[2];
+                const sBonus = latest[3];
+                winNumbers = [...sNums, sBonus];
+
+                // 동기화 체크 (토요일 밤 10시 기준)
+                const now = new Date();
+                const day = now.getDay(); 
+                const hour = now.getHours();
+                let syncNotice = "";
+                const baseDate = new Date("2026-03-14"); // 1215회 기준
+                const weeksPassed = Math.floor((now - baseDate) / (7 * 24 * 60 * 60 * 1000));
+                const expectedRound = 1215 + weeksPassed;
+
+                if ((day === 6 && hour >= 22 && currentServerRound < expectedRound) || (day === 0 && currentServerRound < expectedRound)) {
+                    syncNotice = " <span style='color:#ff4d4f; font-weight:bold;'>[⚠️ 서버 업데이트 지연 중]</span>";
+                }
+
+                statusEl.innerHTML = `제 ${currentServerRound}회 당첨 번호 (${sDate})${syncNotice}`;
+                winDisplay.innerHTML = sNums.map(n => `<div class="w-ball" style="background:${getBallColor(n)}">${n}</div>`).join('') + `<div class="w-plus">+</div>` + `<div class="w-ball" style="background:${getBallColor(sBonus)}">${sBonus}</div>`;
+
+                winNumbers.forEach(n => {
+                    const el = document.getElementById("n" + n);
+                    if (el) el.classList.add("win-hit");
+                });
+            }
+        } catch (e) {
+            statusEl.innerText = "서버 연결 실패 (네트워크 확인)";
+        }
+    }
+
+    // 초기화 함수들
     function initGuide() {
         const guideGrid = document.getElementById('guide-grid');
         const probDesc = document.getElementById('probability-desc');
@@ -164,7 +211,8 @@
             const wrapper = document.createElement('div');
             wrapper.className = 'g-item-wrapper';
             const mini = (i >= 2 && i <= 5) ? getIcon(i, true) : "";
-            wrapper.innerHTML = `<div class="guide-ball s${i}"><span class="ball-num">45</span><div class="ball-label" style="${i===0?'display:none':'display:flex'}">${getIcon(i)}</div></div><span class="g-text">${labels[i]}${mini}</span>`;
+            wrapper.style = "display:flex; flex-direction:column; align-items:center; gap:4px;";
+            wrapper.innerHTML = `<div class="guide-ball s${i}"><span class="ball-num">45</span><div class="ball-label" style="${i===0?'display:none':'display:flex'}">${getIcon(i)}</div></div><span style="font-size:0.42rem; font-weight:bold; color:#999;">${labels[i]}${mini}</span>`;
             guideGrid.appendChild(wrapper);
         }
 
@@ -172,22 +220,15 @@
             const mini = (d.s >= 2 && d.s <= 5) ? getIcon(d.s, true) : "";
             const labelText = d.s === 0 || d.s === 1 || d.s === 6 ? d.txt : `${d.txt}${mini}`;
             return `<div class="desc-item">
-                <div class="desc-label"><span style="font-size:0.8rem; color:#444;">${labelText}</span></div>
+                <span style="font-size:0.8rem; color:#444;">${labelText}</span>
                 ${d.readonly ? `<span style="font-size:0.8rem; font-weight:bold; padding-right:10px; color:#666;">${d.val}</span>` : 
                 `<input type="number" step="0.1" class="weight-input" value="${d.val}" onchange="updateWeight(${d.s}, this.value)">`}
             </div>`;
         }).join('') + `
             <div class="desc-item penalty-row">
-                <div class="desc-label"><span style="font-size:0.8rem; color:#cf1322; font-weight:bold;">이전 게임 선택 번호들의 확률을 다음과 같이 낮춤</span></div>
+                <span style="font-size:0.75rem; color:#cf1322; font-weight:bold;">이전 게임 선택 번호들의 확률을 낮춤</span>
                 <input type="number" step="0.1" class="weight-input" style="color:#cf1322; border-color:#ffa39e;" value="${lastWinWeight}" onchange="updateLastWinWeight(this.value)">
-            </div>
-            <p class="priority-tip">* 사용자가 직접 선택한 확률이 우선 적용됩니다.</p>`;
-    }
-
-    function getBallColor(n) {
-        if (n <= 10) return '#fbc400'; if (n <= 20) return '#69c8f2';
-        if (n <= 30) return '#ff7272'; if (n <= 40) return '#aaaaaa';
-        return '#b0d840';
+            </div>`;
     }
 
     function initGrid() {
@@ -209,33 +250,6 @@
         }
     }
 
-    async function loadLotto() {
-        try {
-            const roundNum = 1215; 
-            const res = await fetch(`https://lottowrk.khscrr.workers.dev/?drwNo=${roundNum}`);
-            const data = await res.json();
-
-            if(data.numbers) {
-                winNumbers = [...data.numbers, data.bonus];
-                const displayRound = data.round || roundNum;
-                const displayDate = data.date || ""; 
-                document.getElementById("win-status").innerText = `제 ${displayRound}회 당첨 번호 ${displayDate ? '(' + displayDate + ')' : ''}`;
-                
-                const winDisplay = document.getElementById("win-display");
-                winDisplay.innerHTML = data.numbers.map(n => 
-                    `<div class="w-ball" style="background:${getBallColor(n)}">${n}</div>`
-                ).join('') + `<div class="w-plus">+</div>` + `<div class="w-ball" style="background:${getBallColor(data.bonus)}">${data.bonus}</div>`;
-
-                winNumbers.forEach(n => {
-                    const el = document.getElementById("n"+n);
-                    if(el) el.classList.add("win-hit");
-                });
-            }
-        } catch(e) {
-            document.getElementById("win-status").innerText = "조회 실패 (네트워크 확인)";
-        }
-    }
-
     function generate() {
         const resDiv = document.getElementById('results');
         const adArea = document.getElementById('ad-area');
@@ -250,15 +264,8 @@
             let pool = [];
             for(let i=1; i<=45; i++) {
                 if(picks.includes(i) || states[i] === 1) continue;
-                
                 let finalWeight = userWeights[states[i]];
-                
-                // 사용자가 아무 설정도 안 한 '보통(s0)' 상태인 번호들 중에서만 
-                // 직전 당첨 번호 가중치를 적용 (즉, 직접 선택이 우선임)
-                if(states[i] === 0 && winNumbers.includes(i)) {
-                    finalWeight = lastWinWeight;
-                }
-
+                if(states[i] === 0 && winNumbers.includes(i)) finalWeight = lastWinWeight;
                 let w = Math.round(finalWeight * 100); 
                 for(let j=0; j<w; j++) pool.push(i); 
             }
@@ -270,35 +277,15 @@
             
             const row = document.createElement('div');
             row.className = 'res-row';
-            row.innerHTML = `<div class="res-idx">#${g+1}</div>` + 
+            row.innerHTML = `<div style="font-size:0.65rem; font-weight:bold; color:#bbb; margin-right:10px; width:20px; text-align:right;">#${g+1}</div>` + 
                             `<div class="res-ball-group">` + 
                             picks.sort((a,b)=>a-b).map(n => `<div class="res-ball" style="background:${getBallColor(n)}">${n}</div>`).join('') +
                             `</div>`;
             resDiv.appendChild(row);
         }
 
-//        adArea.style.display = 'block';
-//        adLoader.innerHTML = `
-//            <a href="https://link.coupang.com/a/XXXXXX" target="_blank" referrerpolicy="unsafe-url">
-//                <img src="https://ads-partners.coupang.com/banners/XXXXXX?t=${new Date().getTime()}" alt="광고" style="width:100%; max-width:320px; border-radius:15px; display:block; margin: 0 auto;">
-//            </a>
-//        `;
-        // [광고 영역 활성화 및 쿠팡 배너 주입]
-    adArea.style.display = 'block';
-    adLoader.innerHTML = `
-        <div style="display: flex; justify-content: center; width: 100%; overflow: hidden; border-radius: 15px;">
-            <iframe 
-                src="https://ads-partners.coupang.com/widgets.html?id=971378&template=carousel&trackingCode=AF6324812&subId=&width=320&height=100&tsource=" 
-                width="320" 
-                height="100" 
-                frameborder="0" 
-                scrolling="no" 
-                referrerpolicy="unsafe-url" 
-                browsingtopics
-                style="max-width: 100%;">
-            </iframe>
-        </div>
-    `; 
+        adArea.style.display = 'block';
+        adLoader.innerHTML = `<div style="display:flex; justify-content:center; width:100%; overflow:hidden; border-radius:15px;"><iframe src="https://ads-partners.coupang.com/widgets.html?id=971378&template=carousel&trackingCode=AF6324812&width=320&height=100" width="320" height="100" frameborder="0" scrolling="no" referrerpolicy="unsafe-url" style="max-width:100%;"></iframe></div>`;
 
         setTimeout(() => { window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }); }, 150);
     }
