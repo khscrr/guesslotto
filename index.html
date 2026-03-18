@@ -1,30 +1,30 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.0/kakao.min.js" integrity="sha384-lLeY6p9CC765S4F8N9H0880l7B1D0E4r/XmN8lY0k39k80808080808080808080" crossorigin="anonymous"></script>
+    <script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.0/kakao.min.js" 
+            integrity="sha384-lLeY6p9CC765S4F8N9H0880l7B1D0E4r/XmN8lY0k39k80808080808080808080" 
+            crossorigin="anonymous"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Lotto Matrix v10.4</title>
+    <title>Lotto Matrix v10.6</title>
     <style>
+        /* ... 기존 스타일 유지 ... */
         :root { --bg: #f4f7f6; --primary: #1a73e8; --gap: 15px; }
         body { font-family: -apple-system, sans-serif; background: var(--bg); margin: 0; padding: 10px; display: flex; justify-content: center; }
         .container { max-width: 480px; width: 100%; display: flex; flex-direction: column; gap: var(--gap); padding-bottom: 20px; }
         .section-box { background: white; padding: 15px; border-radius: 25px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); }
         .standard-grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 6px; width: 100%; }
-        
         .info-header { background: #202124; padding: 15px; border-radius: 20px; text-align: center; color: white; }
         .win-info-text { font-size: 0.75rem; color: #999; margin-bottom: 8px; font-weight: bold; }
         .win-display { display: flex; justify-content: center; gap: 5px; align-items: center; margin-bottom: 12px; }
         .w-ball { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 800; color: white; border: 1px solid rgba(255,255,255,0.1); }
         .w-plus { font-size: 1rem; font-weight: bold; color: #555; }
         .open-btn { display: block; background: #34a853; color: white; text-decoration: none; padding: 10px; border-radius: 12px; font-size: 0.85rem; font-weight: bold; }
-
         .ball, .guide-ball { aspect-ratio: 1; border-radius: 50%; border: 1px solid rgba(0,0,0,0.08); display: flex; align-items: center; justify-content: center; transition: 0.2s; position: relative; width: 100%; overflow: hidden; background-color: #eee; }
         .ball { cursor: pointer; border: none; }
         .ball-num { position: absolute; font-weight: 800; font-size: 0.9rem; z-index: 1; transition: 0.2s; color: rgba(0,0,0,0.8); }
         .ball-label { position: relative; z-index: 2; display: none; width: 100%; height: 100%; align-items: center; justify-content: center; }
         .ball.win-hit { border: 2.5px solid #ff9900 !important; box-shadow: 0 0 10px rgba(255, 204, 0, 0.5); z-index: 5; }
-
         .ball:not(.s0) .ball-num { opacity: 0.15; }
         .ball:not(.s0) .ball-label { display: flex; }
         .s1 { background-color: #333 !important; color: #fff; }
@@ -33,24 +33,19 @@
         .s4 { background-color: #69c8f2 !important; border: 1.5px solid #555; color: #fff; }
         .s5 { background-color: #fbc400 !important; border: 2px solid #000; color: #fff; }
         .s6 { background-color: #ef5350 !important; border: 2.5px solid #ef5350; color: #fff; }
-
         .icon-svg { width: 65%; height: 65%; fill: none; stroke: currentColor; stroke-width: 3.5; stroke-linecap: round; stroke-linejoin: round; }
         .txt-label { font-size: 0.65rem; font-weight: 900; white-space: nowrap; transform: scaleX(0.85); fill: currentColor; }
-
         .gen-btn { width: 100%; padding: 20px; background: var(--primary); color: white; border: none; border-radius: 20px; font-size: 1.1rem; font-weight: bold; cursor: pointer; }
         .share-btn { width: 100%; padding: 12px; background: #FEE500; color: #3c1e1e; border: none; border-radius: 15px; font-size: 0.9rem; font-weight: bold; cursor: pointer; margin-bottom: 15px; display: flex; align-items: center; justify-content: center; gap: 8px; }
-        
         #results { padding: 20px 10px; background: #fffbe6; border-radius: 20px; border: 1px dashed #ffd666; display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
         .res-row { display: flex; align-items: center; justify-content: center; width: 100%; }
         .res-ball-group { display: flex; gap: 6px; }
         .res-ball { width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 1.05rem; box-shadow: 0 3px 6px rgba(0,0,0,0.1); }
-        
         .collapsible { background: #f8f9fa; border-radius: 15px; margin-top: 10px; overflow: hidden; border: 1px solid #eee; }
         .collapsible-header { padding: 10px 15px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; background: #f1f3f4; font-size: 0.8rem; font-weight: bold; }
         .collapsible-content { max-height: 0; overflow: hidden; transition: max-height 0.35s ease; background: #fff; }
         .desc-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 15px; border-bottom: 1px solid rgba(0,0,0,0.03); }
         .weight-input { width: 60px; padding: 6px; border: 1px solid #ddd; border-radius: 8px; text-align: right; font-size: 0.8rem; font-weight: bold; color: var(--primary); }
-
         .ad-container { display: none; width: 100%; text-align: center; background: white; padding: 15px; border-radius: 25px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); margin-top: 15px; }
         .footer-legal { text-align: center; font-size: 0.6rem; color: #bbb; padding: 10px 0; line-height: 1.4; }
     </style>
@@ -93,71 +88,60 @@
 </div>
 
 <script>
+    // [설정] 앱 정보 및 가중치
+    const KAKAO_KEY = 'f1f225756190be892980478becc91d13';
     let userWeights = [1.0, 0, 0.1, 0.5, 2.0, 10.0, 10000]; 
     let lastWinWeight = 1.0; 
     const states = Array(46).fill(0);
     let winNumbers = []; 
 
-    // 카카오 JavaScript 키 적용됨
-    const KAKAO_KEY = 'f1f225756190be892980478becc91d13';
-    try {
-        if (KAKAO_KEY && !Kakao.isInitialized()) {
-            Kakao.init(KAKAO_KEY);
+    // 카카오 SDK 초기화 함수
+    function initKakao() {
+        if (typeof Kakao !== 'undefined') {
+            if (!Kakao.isInitialized()) {
+                Kakao.init(KAKAO_KEY);
+                console.log("카카오 SDK 초기화 성공");
+            }
+        } else {
+            console.error("카카오 SDK를 찾을 수 없습니다.");
         }
-    } catch(e) { console.error("Kakao Init Error:", e); }
-
-// 스크립트 부분의 sendKakaoAll 함수만 이 내용으로 교체해 보세요.
-function sendKakaoAll() {
-    // 1. 초기화 상태 체크
-    if (typeof Kakao === 'undefined') {
-        alert("카카오 SDK 로드 실패! 인터넷 연결을 확인하세요.");
-        return;
     }
-    
-    if (!Kakao.isInitialized()) {
-        try {
-            Kakao.init('f1f225756190be892980478becc91d13');
-            console.log("카카오 키 재초기화 완료");
-        } catch (e) {
-            alert("초기화 오류: " + e.message);
+
+    // 전체 공유 실행 함수
+    function sendKakaoAll() {
+        if (typeof Kakao === 'undefined') {
+            alert("카카오 SDK 로드에 실패했습니다. 페이지를 새로고침해 주세요.");
             return;
         }
-    }
+        initKakao(); // 실행 전 다시 한번 초기화 체크
 
-    const rows = document.querySelectorAll('.res-row');
-    if (rows.length === 0) {
-        alert("먼저 번호를 생성해 주세요!");
-        return;
-    }
+        const rows = document.querySelectorAll('.res-row');
+        if (rows.length === 0) {
+            alert("번호를 먼저 생성해 주세요!");
+            return;
+        }
 
-    // 2. 메시지 구성
-    let text = "🍀 이번 주 로또 행운 번호\n";
-    rows.forEach((row, i) => {
-        const nums = Array.from(row.querySelectorAll('.res-ball')).map(b => b.innerText).join(', ');
-        text += `\n#${i+1}: ${nums}`;
-    });
-
-    // 3. 공유 실행 및 결과 확인
-    try {
-        Kakao.Share.sendDefault({
-            objectType: 'text',
-            text: text + "\n\n1등 당첨을 기원합니다! ✨",
-            link: {
-                mobileWebUrl: window.location.href,
-                webUrl: window.location.href
-            },
-            callback: function() {
-                alert("공유창이 성공적으로 열렸습니다!");
-            }
+        let text = "🍀 로또 행운 번호 (5조합)\n";
+        rows.forEach((row, i) => {
+            const nums = Array.from(row.querySelectorAll('.res-ball')).map(b => b.innerText).join(', ');
+            text += `\n#${i+1}: ${nums}`;
         });
-        // 실행 직후 알림 (함수가 실행되었는지 확인용)
-        console.log("Kakao.Share.sendDefault 호출됨");
-    } catch (err) {
-        alert("공유 실행 중 에러 발생: " + err.message);
-    }
-}
- 
 
+        try {
+            Kakao.Share.sendDefault({
+                objectType: 'text',
+                text: text + "\n\n1등 당첨을 기원합니다! ✨",
+                link: {
+                    mobileWebUrl: window.location.href,
+                    webUrl: window.location.href
+                }
+            });
+        } catch (e) {
+            alert("공유 중 오류 발생: " + e.message);
+        }
+    }
+
+    // ... (기존 로직 함수들: generate, loadLotto, initGrid 등) ...
     function toggleAccordion() {
         const content = document.getElementById('accordion-content');
         const status = document.getElementById('accordion-status');
@@ -268,7 +252,9 @@ function sendKakaoAll() {
         setTimeout(() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }), 150);
     }
 
-    initGuide(); initGrid(); loadLotto();
+    window.onload = () => {
+        initGuide(); initGrid(); loadLotto(); initKakao();
+    };
 </script>
 </body>
 </html>
