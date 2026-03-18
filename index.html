@@ -178,7 +178,7 @@
             </div>`;
         }).join('') + `
             <div class="desc-item penalty-row">
-                <div class="desc-label"><span style="font-size:0.8rem; color:#cf1322; font-weight:bold;">🔥 이전 게임에서 선택한 번호들의 확률을 낮춤</span></div>
+                <div class="desc-label"><span style="font-size:0.8rem; color:#cf1322; font-weight:bold;">이전 게임 선택 번호들의 확률을 다음과 같이 낮춤</span></div>
                 <input type="number" step="0.1" class="weight-input" style="color:#cf1322; border-color:#ffa39e;" value="${lastWinWeight}" onchange="updateLastWinWeight(this.value)">
             </div>
             <p class="priority-tip">* 사용자가 직접 선택한 확률이 우선 적용됩니다.</p>`;
@@ -211,7 +211,7 @@
 
     async function loadLotto() {
         try {
-            const roundNum = 1214; 
+            const roundNum = 1215; 
             const res = await fetch(`https://lottowrk.khscrr.workers.dev/?drwNo=${roundNum}`);
             const data = await res.json();
 
