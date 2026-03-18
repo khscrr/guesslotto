@@ -106,29 +106,33 @@
         }
     } catch(e) { console.error("Kakao Init Error:", e); }
 
-    function sendKakaoAll() {
-        if (!Kakao.isInitialized()) {
-            alert("카카오 키가 설정되지 않았거나 도메인이 등록되지 않았습니다.");
-            return;
-        }
-        const rows = document.querySelectorAll('.res-row');
-        if (rows.length === 0) return;
-
-        let text = "🍀 이번 주 로또 행운 번호\n";
-        rows.forEach((row, i) => {
-            const nums = Array.from(row.querySelectorAll('.res-ball')).map(b => b.innerText).join(', ');
-            text += `\n#${i+1}: ${nums}`;
-        });
-
-        Kakao.Share.sendDefault({
-            objectType: 'text',
-            text: text + "\n\n1등 당첨을 기원합니다! ✨",
-            link: {
-                mobileWebUrl: window.location.href,
-                webUrl: window.location.href
-            }
-        });
+function sendKakaoAll() {
+    if (!Kakao.isInitialized()) {
+        alert("카카오 초기화 실패!");
+        return;
     }
+    const rows = document.querySelectorAll('.res-row');
+    if (rows.length === 0) {
+        alert("먼저 번호를 생성해 주세요!");
+        return;
+    }
+
+    let text = "🍀 이번 주 로또 행운 번호\n";
+    rows.forEach((row, i) => {
+        const nums = Array.from(row.querySelectorAll('.res-ball')).map(b => b.innerText).join(', ');
+        text += `\n#${i+1}: ${nums}`;
+    });
+
+    Kakao.Share.sendDefault({
+        objectType: 'text',
+        text: text + "\n\n1등 당첨을 기원합니다! ✨",
+        link: {
+            mobileWebUrl: window.location.href, // 모바일용 주소 추가
+            webUrl: window.location.href       // PC용 주소
+        }
+    });
+}
+
 
     function toggleAccordion() {
         const content = document.getElementById('accordion-content');
