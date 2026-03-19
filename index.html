@@ -38,7 +38,7 @@
         .chart-bar { flex: 1; min-width: 4px; border-radius: 2px 2px 0 0; position: relative; }
         .chart-bar:hover::after { content: attr(data-val); position: absolute; top: -15px; left: 50%; transform: translateX(-50%); font-size: 9px; color: white; white-space: nowrap; z-index: 10; }
 
-        /* 조합 분석 (세로형 리스트 3열) */
+        /* 조합 분석 (세로형 리스트) */
         .combo-list { display: flex; flex-direction: column; gap: 5px; }
         .combo-item { background: #38393d; padding: 6px 8px; border-radius: 8px; border: 1px solid #444; display: flex; justify-content: space-between; align-items: center; }
         .combo-nums { display: flex; gap: 2px; }
@@ -51,59 +51,37 @@
         .setting-val { font-weight: bold; color: var(--primary); width: 30px; text-align: right; }
 
         /* 번호판 */
-        //.ball { aspect-ratio: 1; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: 0.2s; position: relative; width: 100%; cursor: pointer; border: none; background-color: #eee; }
         .ball { 
-    aspect-ratio: 1; 
-    border-radius: 50%; 
-    display: flex; 
-    align-items: center; 
-    justify-content: center; 
-    transition: 0.2s; 
-    position: relative; 
-    width: 100%; 
-    cursor: pointer; 
-    border: none !important; /* 외부 테두리 원천 봉쇄 */
-    background-color: #eee; 
-    box-sizing: border-box;
-    overflow: hidden;
-}
-        /* 공 안의 글자(제외, 포함 등) 스타일 */
-.ball span.txt-label {
-    font-size: 0.65rem; /* 글자가 조금 더 잘 보이게 크기 조절 */
-    font-weight: 900;
-    line-height: 1;
-    white-space: nowrap;
-}
-        //.ball-num { position: absolute; font-weight: 800; font-size: 0.9rem; z-index: 1; color: rgba(0,0,0,0.8); }
-        .ball-num { 
-    position: absolute; 
-    font-weight: 800; 
-    font-size: 0.9rem; 
-    z-index: 1; 
-    transition: opacity 0.2s; 
-}
+            aspect-ratio: 1; 
+            border-radius: 50%; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            transition: 0.2s; 
+            position: relative; 
+            width: 100%; 
+            cursor: pointer; 
+            border: none !important; 
+            background-color: #eee; 
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+        .ball span.txt-label { font-size: 0.65rem; font-weight: 900; line-height: 1; white-space: nowrap; }
+        .ball-num { position: absolute; font-weight: 800; font-size: 0.9rem; z-index: 1; transition: opacity 0.2s; }
         .ball-label { position: relative; z-index: 2; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
-        /* 2. 상태가 s1~s6일 때 숫자를 숨김 */
-.ball:not(.s0) .ball-num { 
-    opacity: 0; 
-}
+        .ball:not(.s0) .ball-num { opacity: 0; }
         .icon-svg { width: 60%; height: 60%; fill: none; stroke: currentColor; stroke-width: 3.5; stroke-linecap: round; stroke-linejoin: round; }
         .txt-label { font-size: 0.85rem; font-weight: 900; white-space: nowrap; } 
         
-/* 3. 상태별 필터 및 글자색 (제외/포함 강조) */
-.s1 { box-shadow: inset 0 0 0 40px rgba(0, 0, 0, 0.85) !important; color: #fff !important; }
-.s2 { box-shadow: inset 0 0 0 40px rgba(0, 0, 0, 0.5) !important; color: #fff !important; }
-.s3 { box-shadow: inset 0 0 0 40px rgba(0, 0, 0, 0.2) !important; color: #fff !important; }
+        .s1 { box-shadow: inset 0 0 0 40px rgba(0, 0, 0, 0.85) !important; color: #fff !important; }
+        .s2 { box-shadow: inset 0 0 0 40px rgba(0, 0, 0, 0.5) !important; color: #fff !important; }
+        .s3 { box-shadow: inset 0 0 0 40px rgba(0, 0, 0, 0.2) !important; color: #fff !important; }
+        .s4 { box-shadow: inset 0 0 0 40px rgba(255, 255, 255, 0.3), inset 0 0 0 2px #555 !important; color: #000 !important; }
+        .s5 { box-shadow: inset 0 0 0 40px rgba(255, 255, 255, 0.6), inset 0 0 0 2.5px #000 !important; color: #000 !important; }
+        .s6 { box-shadow: inset 0 0 0 40px rgba(255, 255, 255, 0.95), inset 0 0 0 2.5px #333 !important; color: #000 !important; }
 
-.s4 { box-shadow: inset 0 0 0 40px rgba(255, 255, 255, 0.3), inset 0 0 0 2px #555 !important; color: #000 !important; }
-.s5 { box-shadow: inset 0 0 0 40px rgba(255, 255, 255, 0.6), inset 0 0 0 2.5px #000 !important; color: #000 !important; }
-.s6 { box-shadow: inset 0 0 0 40px rgba(255, 255, 255, 0.95), inset 0 0 0 2.5px #333 !important; color: #000 !important; }
-
-
-/* 내부 아이콘(svg)도 글자색을 따라가도록 설정 */
-.icon-svg { stroke: currentColor; opacity: 0.8; }
-.s1 .icon-svg, .s2 .icon-svg { opacity: 0.6; } /* 제외 계열 아이콘은 더 흐리게 */
-
+        .icon-svg { stroke: currentColor; opacity: 0.8; }
+        .s1 .icon-svg, .s2 .icon-svg { opacity: 0.6; }
 
         /* 결과 리스트 */
         #results-container { display: none; flex-direction: column; gap: 10px; }
@@ -116,7 +94,6 @@
         .btn-reset { background: var(--danger); }
         .btn-generate { background: var(--primary); }
 
-        /* 쿠팡 파트너스 안내 문구 */
         .legal-notice { font-size: 10px; color: #999; text-align: center; line-height: 1.4; padding: 10px 0; margin-top: 5px; }
         .local-notice { font-size: 11px; color: #777; text-align: center; font-weight: bold; margin-top: 5px; }
     </style>
@@ -138,6 +115,12 @@
                 <div class="stats-title">전체 회차 빈도</div>
                 <div id="chart-all-area" class="chart-container" style="margin-bottom:10px;"></div>
                 
+                <div class="stats-title" style="margin-top:15px;">🏆 역대 누적 베스트 (TOP 5)</div>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:6px; margin-bottom: 15px;">
+                    <div><span class="stats-label">✌️ 2개 조합</span><div id="all-combo-2-target" class="combo-list"></div></div>
+                    <div><span class="stats-label">🤟 3개 조합</span><div id="all-combo-3-target" class="combo-list"></div></div>
+                </div>
+
                 <div style="background:#38393d; padding:10px; border-radius:12px; margin:10px 0; display:flex; align-items:center; justify-content:center; gap:8px; font-size:0.75rem; color:#fff; border:1px solid #444;">
                     <span>최근</span>
                     <select id="stats-n-range" onchange="refreshStats(true)" style="background:#222; color:#fff; border:1px solid #666; border-radius:5px;"></select>
@@ -147,13 +130,12 @@
 
                 <div id="stats-recent-target"></div>
                 <div class="stats-title">선택 회차 빈도</div>
-                <div id="chart-recent-area" class="chart-container"></div>
+                <div id="chart-recent-area" class="chart-container" style="margin-bottom:10px;"></div>
 
-                <div class="stats-title">베스트 콤비 (TOP 6)</div>
-                <div style="display:grid; grid-template-columns: 1fr 1.1fr 1.3fr; gap:6px;">
-                    <div><span class="stats-label">✌️ 2개</span><div id="combo-2-target" class="combo-list"></div></div>
-                    <div><span class="stats-label">🤟 3개</span><div id="combo-3-target" class="combo-list"></div></div>
-                    <div><span class="stats-label">🍀 4개</span><div id="combo-4-target" class="combo-list"></div></div>
+                <div class="stats-title">🔥 최근 베스트 (TOP 5)</div>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:6px;">
+                    <div><span class="stats-label">✌️ 2개 조합</span><div id="combo-2-target" class="combo-list"></div></div>
+                    <div><span class="stats-label">🤟 3개 조합</span><div id="combo-3-target" class="combo-list"></div></div>
                 </div>
             </div>
         </div>
@@ -167,50 +149,32 @@
             <span id="settings-arrow">▼</span>
         </div>
         <div id="settings-panel" style="display:none; flex-direction:column; margin-top:5px;">
-    
-    <div class="setting-row">
-        <span>이미 선정된 번호 확률</span>
-        <input type="range" id="weight-prev" min="0" max="20" step="0.1" value="1" oninput="updateWeights()">
-        <span id="val-prev" class="setting-val">1</span>
-    </div>
-    
-    <div class="setting-row">
-        <span style="display:flex; align-items:center; gap:4px;">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7l5 5 5-5M7 14l5 5 5-5"/></svg>
-            선택번호 확률감소   
-        </span>
-        <input type="range" id="weight-s2" min="0.01" max="0.9" step="0.01" value="0.1" oninput="updateWeights()">
-        <span id="val-s2" class="setting-val">0.1</span>
-    </div>
-
-    <div class="setting-row">
-        <span style="display:flex; align-items:center; gap:4px;">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M7 10l5 5 5-5"/></svg>
-            선택번호 확률감소   
-        </span>
-        <input type="range" id="weight-s3" min="0.01" max="0.9" step="0.01" value="0.5" oninput="updateWeights()">
-        <span id="val-s3" class="setting-val">0.5</span>
-    </div>
-
-    <div class="setting-row">
-        <span style="display:flex; align-items:center; gap:4px;">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M7 14l5-5 5 5"/></svg>
-            선택번호 확률증가   
-        </span>
-        <input type="range" id="weight-s4" min="1.1" max="5.0" step="0.1" value="2.0" oninput="updateWeights()">
-        <span id="val-s4" class="setting-val">2.0</span>
-    </div>
-
-    <div class="setting-row">
-        <span style="display:flex; align-items:center; gap:4px;">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17l5-5 5 5M7 10l5-5 5 5"/></svg>
-            선택번호 확률증가   
-        </span>
-        <input type="range" id="weight-s5" min="5.0" max="20.0" step="0.1" value="10.0" oninput="updateWeights()">
-        <span id="val-s5" class="setting-val">10.0</span>
-    </div>
-</div>
-
+            <div class="setting-row">
+                <span>이미 선정된 번호 확률</span>
+                <input type="range" id="weight-prev" min="0" max="20" step="0.1" value="1" oninput="updateWeights()">
+                <span id="val-prev" class="setting-val">1</span>
+            </div>
+            <div class="setting-row">
+                <span style="display:flex; align-items:center; gap:4px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7l5 5 5-5M7 14l5 5 5-5"/></svg>선택번호 확률감소</span>
+                <input type="range" id="weight-s2" min="0.01" max="0.9" step="0.01" value="0.1" oninput="updateWeights()">
+                <span id="val-s2" class="setting-val">0.1</span>
+            </div>
+            <div class="setting-row">
+                <span style="display:flex; align-items:center; gap:4px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M7 10l5 5 5-5"/></svg>선택번호 확률감소</span>
+                <input type="range" id="weight-s3" min="0.01" max="0.9" step="0.01" value="0.5" oninput="updateWeights()">
+                <span id="val-s3" class="setting-val">0.5</span>
+            </div>
+            <div class="setting-row">
+                <span style="display:flex; align-items:center; gap:4px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M7 14l5-5 5 5"/></svg>선택번호 확률증가</span>
+                <input type="range" id="weight-s4" min="1.1" max="5.0" step="0.1" value="2.0" oninput="updateWeights()">
+                <span id="val-s4" class="setting-val">2.0</span>
+            </div>
+            <div class="setting-row">
+                <span style="display:flex; align-items:center; gap:4px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17l5-5 5 5M7 10l5-5 5 5"/></svg>선택번호 확률증가</span>
+                <input type="range" id="weight-s5" min="5.0" max="20.0" step="0.1" value="10.0" oninput="updateWeights()">
+                <span id="val-s5" class="setting-val">10.0</span>
+            </div>
+        </div>
     </div>
 
     <div class="section-box"><div id="grid" class="standard-grid"></div></div>
@@ -224,15 +188,10 @@
         <div id="results-list"></div>
         <div class="local-notice">💡 이 번호는 사용자의 장치에만 안전하게 저장됩니다.</div>
         <button onclick="sendKakaoAll()" style="width:100%; padding:14px; background:#FEE500; border:none; border-radius:15px; font-weight:bold;">카카오톡 공유</button>
-        
         <div style="text-align: center; margin-top: 15px; display: flex; justify-content: center;">
             <iframe src="https://ads-partners.coupang.com/widgets.html?id=971378&template=carousel&trackingCode=AF6324812&subId=&width=320&height=100&tsource=" width="320" height="100" frameborder="0" scrolling="no" referrerpolicy="unsafe-url" browsingtopics></iframe>
         </div>
-        
-        <div class="legal-notice">
-            이 포스팅은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.<br>
-            당첨을 보장하지 않으며, 결과에 대한 책임은 사용자 본인에게 있습니다.
-        </div>
+        <div class="legal-notice">이 포스팅은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.<br>당첨을 보장하지 않으며, 결과에 대한 책임은 사용자 본인에게 있습니다.</div>
     </div>
 </div>
 
@@ -240,10 +199,8 @@
     const KAKAO_KEY = 'f1f225756190be892980478becc91d13';
     const DEFAULT_RANGE = 52;
     
-    // 기본 가중치 설정
     let userWeights = [1.0, 0, 0.1, 0.5, 2.0, 10.0, 10000]; 
-    let prevWinWeight = 0.2; // 이전 당첨 번호 패널티 기본값
-
+    let prevWinWeight = 0.2; 
     const states = Array(46).fill(0);
     let winNumbers = []; 
     let cachedHistory = [];
@@ -264,13 +221,8 @@
     function toggleSettings() {
         const p = document.getElementById('settings-panel');
         const a = document.getElementById('settings-arrow');
-        if (p.style.display === 'none') {
-            p.style.display = 'flex';
-            a.innerText = '▲';
-        } else {
-            p.style.display = 'none';
-            a.innerText = '▼';
-        }
+        if (p.style.display === 'none') { p.style.display = 'flex'; a.innerText = '▲'; } 
+        else { p.style.display = 'none'; a.innerText = '▼'; }
     }
 
     function getIcon(state) {
@@ -303,106 +255,104 @@ function refreshStats(isUserAction = false) {
         data.forEach(draw => { draw[2].forEach(n => counts[n]++); if(includeBonus) counts[draw[3]]++; });
         let sorted = []; for(let i=1; i<=45; i++) sorted.push({num: i, count: counts[i]});
         
-        // 1. 실제 데이터의 최솟값과 최댓값 구하기 (0번 인덱스 제외)
-    const validCounts = counts.slice(1);
-    const actualMin = Math.min(...validCounts);
-    const actualMax = Math.max(...validCounts);
+        const validCounts = counts.slice(1);
+        const actualMin = Math.min(...validCounts);
+        const actualMax = Math.max(...validCounts);
 
+        const baseV = Math.max(0, actualMin - 10); 
+        const maxV = actualMax; 
+        const range = maxV - baseV;
 
-    // 1. Y축 범위 수정: maxV를 actualMax와 동일하게 설정
-    const baseV = Math.max(0, actualMin - 10); 
-    const maxV = actualMax; // +2를 제거하여 막대 끝과 점선을 일치시킴
-    const range = maxV - baseV;
-
-    // 2. 막대 생성 (나누기 0 방지를 위해 range가 0일 때 예외처리 추가)
-    const bars = validCounts.map((c, i) => {
-        const h = range > 0 ? ((c - baseV) / range) * 100 : 100;
-        // 100%를 초과하지 않도록 Math.min(100, h) 적용
-        return `<div class="chart-bar" style="height:${Math.max(1, Math.min(100, h))}%; background:${getBallColor(i+1)}" data-val="${c}회"></div>`;
-    }).join('');
-    
-    // Y축 가이드 (숫자, 세로축 선, 가로 점선) 생성
-    const yAxisGuide = `
-        <div style="position:absolute; left:0; top:0; width:100%; height:55px; pointer-events:none; font-size:7px; color:#777;">
-            
-            <div style="position:absolute; left:12px; top:0; height:100%; border-left:1px solid #444;"></div>
-            
-            <div style="position:absolute; top:0; left:12px; right:0; border-top:1px dashed rgba(255,255,255,0.1);"></div>
-            
-            <div style="position:absolute; top:0; left:0; width:10px; text-align:right; transform:translateY(-50%);">
-                ${actualMax}
-            </div>
-
-            <div style="position:absolute; bottom:0; left:0; width:10px; text-align:right; transform:translateY(50%);">
-                ${baseV}
-            </div>
-        </div>
-    `;
-
-    // X축 숫자 라벨 (Y축 선 이동 16px에 맞춰 padding-left를 17px로 조정)
-    const xLabels = `
-        <div style="display:flex; justify-content:space-between; font-size:7px; color:#666; margin-top:4px; padding-left:17px; padding-right:0px; width:101%; box-sizing:border-box;">
-            <span>1</span><span></span><span>10</span><span></span><span>20</span><span></span><span>30</span><span></span><span>40</span><span>45</span>
-        </div>
-    `;
-
-    const chartArea = document.getElementById(chartId);
-    chartArea.style.height = "auto";
-    chartArea.style.display = "block";
-    chartArea.innerHTML = `
-        <div style="position:relative; margin-bottom:15px;padding-top:0px;">
-            <div style="position:relative; padding-left:17px;">
-                ${yAxisGuide}
-                <div class="chart-container" style="display:flex; align-items:flex-end; gap:2px; height:45px; border-bottom:1px solid #444; position:relative; z-index:1;">
-                    ${bars}
+        const bars = validCounts.map((c, i) => {
+            const h = range > 0 ? ((c - baseV) / range) * 100 : 100;
+            return `<div class="chart-bar" style="height:${Math.max(1, Math.min(100, h))}%; background:${getBallColor(i+1)}" data-val="${c}회"></div>`;
+        }).join('');
+        
+        // Y축 가이드: top: 3px, bottom: -3px 로 변경하여 숫자를 조금 아래로 내림
+        const yAxisGuide = `
+            <div style="position:absolute; left:0; top:0; width:100%; height:55px; pointer-events:none; font-size:7px; color:#777;">
+                <div style="position:absolute; left:12px; top:0; height:100%; border-left:1px solid #444;"></div>
+                <div style="position:absolute; top:0; left:12px; right:0; border-top:1px dashed rgba(255,255,255,0.1);"></div>
+                <div style="position:absolute; top:3px; left:0; width:10px; text-align:right; transform:translateY(-50%);">
+                    ${actualMax}
+                </div>
+                <div style="position:absolute; bottom:-3px; left:0; width:10px; text-align:right; transform:translateY(50%);">
+                    ${baseV}
                 </div>
             </div>
-            ${xLabels}
-        </div>
-    `;
+        `;
 
-    const makeGrid = (list) => `<div class="stats-grid">${list.map(item => `<div class="stats-unit"><div class="s-ball" style="background:${getBallColor(item.num)}">${item.num}</div><div class="s-count">${item.count}회</div></div>`).join('')}</div>`;
+        const xLabels = `
+            <div style="display:flex; justify-content:space-between; font-size:7px; color:#666; margin-top:4px; padding-left:17px; padding-right:0px; width:101%; box-sizing:border-box;">
+                <span>1</span><span></span><span>10</span><span></span><span>20</span><span></span><span>30</span><span></span><span>40</span><span>45</span>
+            </div>
+        `;
 
-    const most = [...sorted].sort((a,b) => b.count - a.count).slice(0,6);
-    const least = [...sorted].sort((a,b) => a.count - b.count).slice(0,6);
-    return `<div class="stats-title">${title}</div><div class="stats-row"><span class="stats-label">🔥 최다</span>${makeGrid(most)}</div><div class="stats-row"><span class="stats-label">❄️ 최소</span>${makeGrid(least)}</div>`;
-};
+        const chartArea = document.getElementById(chartId);
+        chartArea.style.height = "auto";
+        chartArea.style.display = "block";
+        chartArea.innerHTML = `
+            <div style="position:relative; margin-bottom:15px;padding-top:0px;">
+                <div style="position:relative; padding-left:17px;">
+                    ${yAxisGuide}
+                    <div class="chart-container" style="display:flex; align-items:flex-end; gap:2px; height:45px; border-bottom:1px solid #444; position:relative; z-index:1;">
+                        ${bars}
+                    </div>
+                </div>
+                ${xLabels}
+            </div>
+        `;
+
+        const makeGrid = (list) => `<div class="stats-grid">${list.map(item => `<div class="stats-unit"><div class="s-ball" style="background:${getBallColor(item.num)}">${item.num}</div><div class="s-count">${item.count}회</div></div>`).join('')}</div>`;
+
+        const most = [...sorted].sort((a,b) => b.count - a.count).slice(0,6);
+        const least = [...sorted].sort((a,b) => a.count - b.count).slice(0,6);
+        return `<div class="stats-title">${title}</div><div class="stats-row"><span class="stats-label">🔥 최다</span>${makeGrid(most)}</div><div class="stats-row"><span class="stats-label">❄️ 최소</span>${makeGrid(least)}</div>`;
+    };
     
-    // 전체 및 최근 통계 렌더링 (함수 내부에서 숫자 라벨까지 처리함)
+    // 차트 렌더링
     document.getElementById("stats-all-target").innerHTML = createBlockHtml(cachedHistory, "전체 누적 통계", "chart-all-area");
     const recentData = cachedHistory.slice(0, nRange);
     document.getElementById("stats-recent-target").innerHTML = createBlockHtml(recentData, `최근 ${nRange}회 분석`, "chart-recent-area");
 
-    // 베스트 콤비 로직 (기존과 동일)
-    let pairs = {}; let triplets = {}; let quads = {};
-    recentData.forEach(draw => {
-        const nums = [...draw[2], includeBonus ? draw[3] : null].filter(v=>v).sort((a,b)=>a-b);
-        for(let i=0; i<nums.length; i++) {
-            for(let j=i+1; j<nums.length; j++) {
-                const k2 = `${nums[i]},${nums[j]}`; pairs[k2] = (pairs[k2]||0)+1;
-                for(let k=j+1; k<nums.length; k++) { 
-                    const k3 = `${nums[i]},${nums[j]},${nums[k]}`; triplets[k3] = (triplets[k3]||0)+1; 
-                    for(let l=k+1; l<nums.length; l++) {
-                        const k4 = `${nums[i]},${nums[j]},${nums[k]},${nums[l]}`; quads[k4] = (quads[k4]||0)+1;
+    // 공통 콤비 계산 로직 (4개 조합 제외)
+    const getCombos = (data) => {
+        let p = {}; let t = {};
+        data.forEach(draw => {
+            const nums = [...draw[2], includeBonus ? draw[3] : null].filter(v=>v).sort((a,b)=>a-b);
+            for(let i=0; i<nums.length; i++) {
+                for(let j=i+1; j<nums.length; j++) {
+                    const k2 = `${nums[i]},${nums[j]}`; p[k2] = (p[k2]||0)+1;
+                    for(let k=j+1; k<nums.length; k++) { 
+                        const k3 = `${nums[i]},${nums[j]},${nums[k]}`; t[k3] = (t[k3]||0)+1; 
                     }
                 }
             }
-        }
-    });
-    
+        });
+        return { p, t };
+    };
+
     const renderCombo = (obj, target, limit) => {
         const sorted = Object.entries(obj).sort((a,b)=>b[1]-a[1]).slice(0, limit);
-        document.getElementById(target).innerHTML = sorted.map(([nums, count]) => `
+        const targetEl = document.getElementById(target);
+        if(!targetEl) return;
+        targetEl.innerHTML = sorted.map(([nums, count]) => `
             <div class="combo-item">
                 <div class="combo-nums">${nums.split(',').map(n => `<div class="c-ball" style="background:${getBallColor(parseInt(n))}">${n}</div>`).join('')}</div>
                 <div class="c-count">${count}회</div>
             </div>`).join('');
     };
-    renderCombo(pairs, 'combo-2-target', 6); 
-    renderCombo(triplets, 'combo-3-target', 6);
-    renderCombo(quads, 'combo-4-target', 6);
-}
 
+    // 전체 누적 콤비 (TOP 5)
+    const allCombos = getCombos(cachedHistory);
+    renderCombo(allCombos.p, 'all-combo-2-target', 5);
+    renderCombo(allCombos.t, 'all-combo-3-target', 5);
+
+    // 최근 n회 콤비 (TOP 5)
+    const recentCombos = getCombos(recentData);
+    renderCombo(recentCombos.p, 'combo-2-target', 5); 
+    renderCombo(recentCombos.t, 'combo-3-target', 5);
+}
 
     async function loadLotto() {
         try {
@@ -436,19 +386,12 @@ function refreshStats(isUserAction = false) {
         }
     }
 
-function renderBall(i) {
-    const b = document.getElementById('n' + i);
-    // 상태 클래스(s0~s6) 부여
-    b.className = 'ball s' + states[i] + (b.classList.contains('win-hit') ? ' win-hit' : '');
-    
-    // 핵심: 어떤 상태든 원래 번호 색상(노랑, 파랑 등)을 항상 유지합니다.
-    // 그 위에 CSS의 box-shadow 필터가 씌워지는 구조입니다.
-    b.style.backgroundColor = getBallColor(i);
-
-    // 공 안의 아이콘이나 텍스트(제외, 포함 등) 표시
-    document.getElementById('label-' + i).innerHTML = getIcon(states[i]);
-}
-
+    function renderBall(i) {
+        const b = document.getElementById('n' + i);
+        b.className = 'ball s' + states[i] + (b.classList.contains('win-hit') ? ' win-hit' : '');
+        b.style.backgroundColor = getBallColor(i);
+        document.getElementById('label-' + i).innerHTML = getIcon(states[i]);
+    }
 
     function generate() {
         const results = [];
@@ -458,11 +401,8 @@ function renderBall(i) {
             let picks = [...fixed]; let pool = [];
             for(let i=1; i<=45; i++) {
                 if(picks.includes(i) || states[i] === 1) continue;
-                
-                // 가중치 적용 로직: 이전 당첨 번호는 보통(s0) 상태일 때 패널티 부여
                 let baseW = states[i] === 0 ? 1.0 : userWeights[states[i]];
                 if (states[i] === 0 && winNumbers.includes(i)) baseW = prevWinWeight; 
-                
                 let w = Math.round(baseW * 100);
                 for(let j=0; j<w; j++) pool.push(i);
             }
@@ -492,41 +432,23 @@ function renderBall(i) {
     function resetAll() { if(!confirm("번호판을 초기화하시겠습니까?")) return; for(let i=1; i<=45; i++) { states[i] = 0; renderBall(i); } }
     function toggleStats() { const c = document.getElementById('stats-content'); c.style.maxHeight = c.style.maxHeight === '2500px' ? '0px' : '2500px'; }
     
-function initGuide() {
-    const guideGrid = document.getElementById('guide-grid');
-    guideGrid.innerHTML = '';
-    
-    // 0번(보통)부터 6번(포함)까지 순회하며 공만 생성
-    [0, 1, 2, 3, 4, 5, 6].forEach(i => {
-        const wrapper = document.createElement('div');
-        wrapper.style = "display:flex; flex-direction:column; align-items:center;";
-        
-        // 공 안에 들어갈 내용 결정
-        let innerContent = "";
-        if (i === 0) {
-            innerContent = `<span style="font-size:0.6rem; font-weight:900; color:#888;">보통</span>`;
-        } else if (i === 1) {
-            innerContent = `<span style="font-size:0.6rem; font-weight:900; color:#fff;">제외</span>`;
-        } else if (i === 6) {
-            //innerContent = `<span style="font-size:0.6rem; font-weight:900; color:#333;">포함</span>`;
-            innerContent = `<span style="font-size:0.6rem; font-weight:900; color:#000;">포함</span>`;
-        } else {
-            innerContent = getIcon(i); // 화살표 아이콘
-        }
-
-        wrapper.innerHTML = `
-            <div class="ball s${i}" style="width:28px; height:28px; display:flex; align-items:center; justify-content:center;">
-                ${innerContent}
-            </div>
-        `;
-        guideGrid.appendChild(wrapper);
-    });
-
-    // 7개가 한 줄에 딱 맞게 정렬 (간격 조절 가능)
-    guideGrid.style.gridTemplateColumns = "repeat(7, 1fr)";
-    guideGrid.style.gap = "5px"; 
-}
-
+    function initGuide() {
+        const guideGrid = document.getElementById('guide-grid');
+        guideGrid.innerHTML = '';
+        [0, 1, 2, 3, 4, 5, 6].forEach(i => {
+            const wrapper = document.createElement('div');
+            wrapper.style = "display:flex; flex-direction:column; align-items:center;";
+            let innerContent = "";
+            if (i === 0) innerContent = `<span style="font-size:0.6rem; font-weight:900; color:#888;">보통</span>`;
+            else if (i === 1) innerContent = `<span style="font-size:0.6rem; font-weight:900; color:#fff;">제외</span>`;
+            else if (i === 6) innerContent = `<span style="font-size:0.6rem; font-weight:900; color:#000;">포함</span>`;
+            else innerContent = getIcon(i);
+            wrapper.innerHTML = `<div class="ball s${i}" style="width:28px; height:28px; display:flex; align-items:center; justify-content:center;">${innerContent}</div>`;
+            guideGrid.appendChild(wrapper);
+        });
+        guideGrid.style.gridTemplateColumns = "repeat(7, 1fr)";
+        guideGrid.style.gap = "5px"; 
+    }
 
     function sendKakaoAll() {
         if (!Kakao.isInitialized()) Kakao.init(KAKAO_KEY);
