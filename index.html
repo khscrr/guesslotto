@@ -12,7 +12,6 @@
         .section-box { background: white; padding: 15px; border-radius: 25px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); }
         .standard-grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 6px; width: 100%; }
         
-        /* 헤더 & 통계 */
         .info-header { background: #202124; padding: 15px; border-radius: 20px; text-align: center; color: white; }
         .win-info-text { font-size: 0.75rem; color: #999; margin-bottom: 8px; font-weight: bold; }
         .win-display { display: flex; justify-content: center; gap: 5px; align-items: center; margin-bottom: 12px; }
@@ -33,57 +32,95 @@
         .s-ball { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.85rem; color: white; }
         .s-count { font-size: 0.6rem; color: #34a853; font-weight: bold; }
 
-        /* 그래프 */
-        .chart-container { display: flex; align-items: flex-end; gap: 2px; height: 45px; padding: 5px 0; }
-        .chart-bar { flex: 1; min-width: 4px; border-radius: 2px 2px 0 0; position: relative; }
-        .chart-bar:hover::after { content: attr(data-val); position: absolute; top: -15px; left: 50%; transform: translateX(-50%); font-size: 9px; color: white; white-space: nowrap; z-index: 10; }
+        /* ── 그래프 ── */
+        .freq-chart-wrap {
+            margin: 4px 0 16px;
+        }
+        .freq-chart-inner {
+            display: flex;
+            gap: 0;
+            align-items: flex-end;
+            height: 56px;
+            border-bottom: 1px solid rgba(255,255,255,0.12);
+            position: relative;
+            padding: 0 2px;
+        }
+        .freq-bar-col {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            height: 100%;
+        }
+        .freq-bar {
+            width: 70%;
+            border-radius: 2px 2px 0 0;
+            min-height: 2px;
+            transition: height 0.3s ease;
+        }
+        .freq-x-labels {
+            display: flex;
+            justify-content: space-between;
+            padding: 4px 2px 0;
+            font-size: 9px;
+            color: #555;
+            line-height: 1;
+        }
+        .freq-y-labels {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: absolute;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            align-items: flex-end;
+            pointer-events: none;
+        }
+        .freq-y-label {
+            font-size: 8px;
+            color: #555;
+            line-height: 1;
+            background: #2a2b2e;
+            padding: 0 2px;
+        }
+        /* 가이드라인 */
+        .freq-guideline {
+            position: absolute;
+            left: 0; right: 0;
+            border-top: 1px dashed rgba(255,255,255,0.06);
+            pointer-events: none;
+        }
 
-        /* 조합 분석 (세로형 리스트) */
+        /* 조합 분석 */
         .combo-list { display: flex; flex-direction: column; gap: 5px; }
         .combo-item { background: #38393d; padding: 6px 8px; border-radius: 8px; border: 1px solid #444; display: flex; justify-content: space-between; align-items: center; }
         .combo-nums { display: flex; gap: 2px; }
         .c-ball { width: 17px; height: 17px; border-radius: 50%; font-size: 0.6rem; font-weight: bold; display: flex; align-items: center; justify-content: center; color: white; }
         .c-count { font-size: 0.6rem; color: var(--success); font-weight: bold; margin-left:2px; }
 
-        /* 가중치 설정 패널 */
         .setting-row { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; font-size: 0.8rem; color: #555; }
         .setting-row input[type=range] { flex: 1; margin: 0 10px; accent-color: var(--primary); }
         .setting-val { font-weight: bold; color: var(--primary); width: 30px; text-align: right; }
 
-        /* 번호판 */
-        .ball { 
-            aspect-ratio: 1; 
-            border-radius: 50%; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            transition: 0.2s; 
-            position: relative; 
-            width: 100%; 
-            cursor: pointer; 
-            border: none !important; 
-            background-color: #eee; 
-            box-sizing: border-box;
-            overflow: hidden;
-        }
+        .ball { aspect-ratio: 1; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: 0.2s; position: relative; width: 100%; cursor: pointer; border: none !important; background-color: #eee; box-sizing: border-box; overflow: hidden; }
         .ball span.txt-label { font-size: 0.65rem; font-weight: 900; line-height: 1; white-space: nowrap; }
         .ball-num { position: absolute; font-weight: 800; font-size: 0.9rem; z-index: 1; transition: opacity 0.2s; }
         .ball-label { position: relative; z-index: 2; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
         .ball:not(.s0) .ball-num { opacity: 0; }
         .icon-svg { width: 60%; height: 60%; fill: none; stroke: currentColor; stroke-width: 3.5; stroke-linecap: round; stroke-linejoin: round; }
-        .txt-label { font-size: 0.85rem; font-weight: 900; white-space: nowrap; } 
+        .txt-label { font-size: 0.85rem; font-weight: 900; white-space: nowrap; }
         
-        .s1 { box-shadow: inset 0 0 0 40px rgba(0, 0, 0, 0.85) !important; color: #fff !important; }
-        .s2 { box-shadow: inset 0 0 0 40px rgba(0, 0, 0, 0.5) !important; color: #fff !important; }
-        .s3 { box-shadow: inset 0 0 0 40px rgba(0, 0, 0, 0.2) !important; color: #fff !important; }
-        .s4 { box-shadow: inset 0 0 0 40px rgba(255, 255, 255, 0.3), inset 0 0 0 2px #555 !important; color: #000 !important; }
-        .s5 { box-shadow: inset 0 0 0 40px rgba(255, 255, 255, 0.6), inset 0 0 0 2.5px #000 !important; color: #000 !important; }
-        .s6 { box-shadow: inset 0 0 0 40px rgba(255, 255, 255, 0.95), inset 0 0 0 2.5px #333 !important; color: #000 !important; }
-
+        .s1 { box-shadow: inset 0 0 0 40px rgba(0,0,0,0.85) !important; color: #fff !important; }
+        .s2 { box-shadow: inset 0 0 0 40px rgba(0,0,0,0.5) !important; color: #fff !important; }
+        .s3 { box-shadow: inset 0 0 0 40px rgba(0,0,0,0.2) !important; color: #fff !important; }
+        .s4 { box-shadow: inset 0 0 0 40px rgba(255,255,255,0.3), inset 0 0 0 2px #555 !important; color: #000 !important; }
+        .s5 { box-shadow: inset 0 0 0 40px rgba(255,255,255,0.6), inset 0 0 0 2.5px #000 !important; color: #000 !important; }
+        .s6 { box-shadow: inset 0 0 0 40px rgba(255,255,255,0.95), inset 0 0 0 2.5px #333 !important; color: #000 !important; }
         .icon-svg { stroke: currentColor; opacity: 0.8; }
         .s1 .icon-svg, .s2 .icon-svg { opacity: 0.6; }
 
-        /* 결과 리스트 */
         #results-container { display: none; flex-direction: column; gap: 10px; }
         #results-list { padding: 15px 10px; background: #fffbe6; border-radius: 20px; border: 1px dashed #ffd666; display: flex; flex-direction: column; gap: 8px; }
         .res-row { display: flex; align-items: center; justify-content: center; gap: 10px; }
@@ -93,7 +130,6 @@
         .action-btn { flex: 1; padding: 18px; border: none; border-radius: 20px; font-size: 1rem; font-weight: bold; cursor: pointer; color: white; }
         .btn-reset { background: var(--danger); }
         .btn-generate { background: var(--primary); }
-
         .legal-notice { font-size: 10px; color: #999; text-align: center; line-height: 1.4; padding: 10px 0; margin-top: 5px; }
         .local-notice { font-size: 11px; color: #777; text-align: center; font-weight: bold; margin-top: 5px; }
     </style>
@@ -113,7 +149,7 @@
             <div class="stats-inner">
                 <div id="stats-all-target"></div>
                 <div class="stats-title">전체 회차 빈도</div>
-                <div id="chart-all-area" class="chart-container" style="margin-bottom:10px;"></div>
+                <div id="chart-all-area" class="freq-chart-wrap"></div>
                 
                 <div class="stats-title" style="margin-top:15px;">🏆 역대 누적 베스트 (TOP 5)</div>
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:6px; margin-bottom: 15px;">
@@ -130,7 +166,7 @@
 
                 <div id="stats-recent-target"></div>
                 <div class="stats-title">선택 회차 빈도</div>
-                <div id="chart-recent-area" class="chart-container" style="margin-bottom:10px;"></div>
+                <div id="chart-recent-area" class="freq-chart-wrap"></div>
 
                 <div class="stats-title">🔥 최근 베스트 (TOP 5)</div>
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:6px;">
@@ -170,7 +206,7 @@
                 <span id="val-s4" class="setting-val">2.0</span>
             </div>
             <div class="setting-row">
-                <span style="display:flex; align-items:center; gap:4px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17l5-5 5 5M7 10l5-5 5 5"/></svg>선택번호 확률증가</span>
+                <span style="display:flex; align-items:center; gap:4px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M7 10l5-5 5 5M7 17l5-5 5 5"/></svg>선택번호 확률증가</span>
                 <input type="range" id="weight-s5" min="5.0" max="20.0" step="0.1" value="10.0" oninput="updateWeights()">
                 <span id="val-s5" class="setting-val">10.0</span>
             </div>
@@ -244,126 +280,162 @@
         return '#b0d840';
     }
 
-function refreshStats(isUserAction = false) {
-    if(!cachedHistory.length) return;
-    const nRange = parseInt(document.getElementById('stats-n-range').value);
-    const includeBonus = document.getElementById('stats-bonus-check').checked;
-    if(isUserAction) document.getElementById('stats-n-range').blur();
+    // ── 그래프 렌더링 ──────────────────────────────────────────
+    function renderFreqChart(containerId, counts) {
+        const container = document.getElementById(containerId);
+        if (!container) return;
 
-    const createBlockHtml = (data, title, chartId) => {
-        let counts = Array(46).fill(0);
-        data.forEach(draw => { draw[2].forEach(n => counts[n]++); if(includeBonus) counts[draw[3]]++; });
-        let sorted = []; for(let i=1; i<=45; i++) sorted.push({num: i, count: counts[i]});
-        
-        const validCounts = counts.slice(1);
-        const actualMin = Math.min(...validCounts);
-        const actualMax = Math.max(...validCounts);
+        const vals = counts.slice(1); // 1~45
+        const maxV = Math.max(...vals);
+        const minV = Math.min(...vals);
+        const avg  = vals.reduce((a, b) => a + b, 0) / vals.length;
+        const range = maxV - minV || 1;
 
-        const baseV = Math.max(0, actualMin - 10); 
-        const maxV = actualMax; 
-        const range = maxV - baseV;
+        // 가이드라인 높이 계산 (avg 위치)
+        const avgPct = ((avg - minV) / range) * 100;
 
-        const bars = validCounts.map((c, i) => {
-            const h = range > 0 ? ((c - baseV) / range) * 100 : 100;
-            return `<div class="chart-bar" style="height:${Math.max(1, Math.min(100, h))}%; background:${getBallColor(i+1)}" data-val="${c}회"></div>`;
+        // 바 HTML
+        const bars = vals.map((c, i) => {
+            const num = i + 1;
+            const pct = Math.max(2, ((c - minV) / range) * 100);
+            const color = getBallColor(num);
+            // 평균 이상이면 살짝 밝게, 이하면 투명도 낮춤
+            const opacity = c >= avg ? 1 : 0.55;
+            return `<div class="freq-bar-col">
+                <div class="freq-bar" style="height:${pct}%; background:${color}; opacity:${opacity};"></div>
+            </div>`;
         }).join('');
-        
-        // Y축 가이드: top: 3px, bottom: -3px 로 변경하여 숫자를 조금 아래로 내림
-        const yAxisGuide = `
-            <div style="position:absolute; left:0; top:0; width:100%; height:55px; pointer-events:none; font-size:7px; color:#777;">
-                <div style="position:absolute; left:12px; top:0; height:100%; border-left:1px solid #444;"></div>
-                <div style="position:absolute; top:0; left:12px; right:0; border-top:1px dashed rgba(255,255,255,0.1);"></div>
-                <div style="position:absolute; top:3px; left:0; width:10px; text-align:right; transform:translateY(-50%);">
-                    ${actualMax}
-                </div>
-                <div style="position:absolute; bottom:-3px; left:0; width:10px; text-align:right; transform:translateY(50%);">
-                    ${baseV}
-                </div>
-            </div>
-        `;
 
-        const xLabels = `
-            <div style="display:flex; justify-content:space-between; font-size:7px; color:#666; margin-top:4px; padding-left:17px; padding-right:0px; width:101%; box-sizing:border-box;">
-                <span>1</span><span></span><span>10</span><span></span><span>20</span><span></span><span>30</span><span></span><span>40</span><span>45</span>
-            </div>
-        `;
+        // X축 레이블 (1, 10, 20, 30, 40, 45 위치)
+        // 45개 칸 중 해당 위치 % 계산
+        const xTicks = [
+            { num: 1,  pct: (0/44)*100 },
+            { num: 10, pct: (9/44)*100 },
+            { num: 20, pct: (19/44)*100 },
+            { num: 30, pct: (29/44)*100 },
+            { num: 40, pct: (39/44)*100 },
+            { num: 45, pct: (44/44)*100 },
+        ];
 
-        const chartArea = document.getElementById(chartId);
-        chartArea.style.height = "auto";
-        chartArea.style.display = "block";
-        chartArea.innerHTML = `
-            <div style="position:relative; margin-bottom:15px;padding-top:0px;">
-                <div style="position:relative; padding-left:17px;">
-                    ${yAxisGuide}
-                    <div class="chart-container" style="display:flex; align-items:flex-end; gap:2px; height:45px; border-bottom:1px solid #444; position:relative; z-index:1;">
+        const xLabelHtml = xTicks.map(t =>
+            `<span style="position:absolute; left:${t.pct}%; transform:translateX(-50%);">${t.num}</span>`
+        ).join('');
+
+        container.innerHTML = `
+            <div style="position:relative;">
+                <!-- Y축 레이블 (오른쪽 끝에 붙임) -->
+                <div style="position:relative; padding-right:24px;">
+                    <!-- 가이드라인: avg -->
+                    <div style="position:absolute; bottom:calc(${avgPct}%); left:0; right:24px;
+                                border-top:1px dashed rgba(255,255,255,0.15); z-index:0; pointer-events:none;"></div>
+
+                    <!-- 바 컨테이너 -->
+                    <div class="freq-chart-inner" style="position:relative; z-index:1;">
                         ${bars}
                     </div>
+
+                    <!-- Y 레이블: max, avg, min -->
+                    <div style="position:absolute; top:0; right:0; bottom:0; width:22px;
+                                display:flex; flex-direction:column; justify-content:space-between;
+                                align-items:flex-end; pointer-events:none; padding:0 0 0 2px;">
+                        <span style="font-size:8px; color:#666; line-height:1;">${maxV}</span>
+                        <span style="font-size:8px; color:#4a7; line-height:1; position:absolute;
+                                     bottom:calc(${avgPct}%); right:0; transform:translateY(50%);">${Math.round(avg)}</span>
+                        <span style="font-size:8px; color:#666; line-height:1;">${minV}</span>
+                    </div>
                 </div>
-                ${xLabels}
+
+                <!-- X축 레이블 -->
+                <div style="position:relative; height:14px; margin-top:3px; padding-right:24px;">
+                    <div style="position:relative; height:100%; font-size:9px; color:#555;">
+                        ${xLabelHtml}
+                    </div>
+                </div>
             </div>
         `;
+    }
+    // ────────────────────────────────────────────────────────────
 
-        const makeGrid = (list) => `<div class="stats-grid">${list.map(item => `<div class="stats-unit"><div class="s-ball" style="background:${getBallColor(item.num)}">${item.num}</div><div class="s-count">${item.count}회</div></div>`).join('')}</div>`;
+    function refreshStats(isUserAction = false) {
+        if (!cachedHistory.length) return;
+        const nRange = parseInt(document.getElementById('stats-n-range').value);
+        const includeBonus = document.getElementById('stats-bonus-check').checked;
+        if (isUserAction) document.getElementById('stats-n-range').blur();
 
-        const most = [...sorted].sort((a,b) => b.count - a.count).slice(0,6);
-        const least = [...sorted].sort((a,b) => a.count - b.count).slice(0,6);
-        return `<div class="stats-title">${title}</div><div class="stats-row"><span class="stats-label">🔥 최다</span>${makeGrid(most)}</div><div class="stats-row"><span class="stats-label">❄️ 최소</span>${makeGrid(least)}</div>`;
-    };
-    
-    // 차트 렌더링
-    document.getElementById("stats-all-target").innerHTML = createBlockHtml(cachedHistory, "전체 누적 통계", "chart-all-area");
-    const recentData = cachedHistory.slice(0, nRange);
-    document.getElementById("stats-recent-target").innerHTML = createBlockHtml(recentData, `최근 ${nRange}회 분석`, "chart-recent-area");
+        const getCounts = (data) => {
+            let counts = Array(46).fill(0);
+            data.forEach(draw => {
+                draw[2].forEach(n => counts[n]++);
+                if (includeBonus) counts[draw[3]]++;
+            });
+            return counts;
+        };
 
-    // 공통 콤비 계산 로직 (4개 조합 제외)
-    const getCombos = (data) => {
-        let p = {}; let t = {};
-        data.forEach(draw => {
-            const nums = [...draw[2], includeBonus ? draw[3] : null].filter(v=>v).sort((a,b)=>a-b);
-            for(let i=0; i<nums.length; i++) {
-                for(let j=i+1; j<nums.length; j++) {
-                    const k2 = `${nums[i]},${nums[j]}`; p[k2] = (p[k2]||0)+1;
-                    for(let k=j+1; k<nums.length; k++) { 
-                        const k3 = `${nums[i]},${nums[j]},${nums[k]}`; t[k3] = (t[k3]||0)+1; 
+        const createBlockHtml = (data, title) => {
+            const counts = getCounts(data);
+            let sorted = [];
+            for (let i = 1; i <= 45; i++) sorted.push({ num: i, count: counts[i] });
+            const makeGrid = (list) => `<div class="stats-grid">${list.map(item => `<div class="stats-unit"><div class="s-ball" style="background:${getBallColor(item.num)}">${item.num}</div><div class="s-count">${item.count}회</div></div>`).join('')}</div>`;
+            const most  = [...sorted].sort((a, b) => b.count - a.count).slice(0, 6);
+            const least = [...sorted].sort((a, b) => a.count - b.count).slice(0, 6);
+            return `<div class="stats-title">${title}</div><div class="stats-row"><span class="stats-label">🔥 최다</span>${makeGrid(most)}</div><div class="stats-row"><span class="stats-label">❄️ 최소</span>${makeGrid(least)}</div>`;
+        };
+
+        // 텍스트 통계
+        document.getElementById('stats-all-target').innerHTML    = createBlockHtml(cachedHistory, '전체 누적 통계');
+        const recentData = cachedHistory.slice(0, nRange);
+        document.getElementById('stats-recent-target').innerHTML = createBlockHtml(recentData, `최근 ${nRange}회 분석`);
+
+        // 그래프
+        renderFreqChart('chart-all-area',    getCounts(cachedHistory));
+        renderFreqChart('chart-recent-area', getCounts(recentData));
+
+        // 조합
+        const getCombos = (data) => {
+            let p = {}, t = {};
+            data.forEach(draw => {
+                const nums = [...draw[2], includeBonus ? draw[3] : null].filter(v => v).sort((a, b) => a - b);
+                for (let i = 0; i < nums.length; i++) {
+                    for (let j = i + 1; j < nums.length; j++) {
+                        const k2 = `${nums[i]},${nums[j]}`; p[k2] = (p[k2] || 0) + 1;
+                        for (let k = j + 1; k < nums.length; k++) {
+                            const k3 = `${nums[i]},${nums[j]},${nums[k]}`; t[k3] = (t[k3] || 0) + 1;
+                        }
                     }
                 }
-            }
-        });
-        return { p, t };
-    };
+            });
+            return { p, t };
+        };
 
-    const renderCombo = (obj, target, limit) => {
-        const sorted = Object.entries(obj).sort((a,b)=>b[1]-a[1]).slice(0, limit);
-        const targetEl = document.getElementById(target);
-        if(!targetEl) return;
-        targetEl.innerHTML = sorted.map(([nums, count]) => `
-            <div class="combo-item">
-                <div class="combo-nums">${nums.split(',').map(n => `<div class="c-ball" style="background:${getBallColor(parseInt(n))}">${n}</div>`).join('')}</div>
-                <div class="c-count">${count}회</div>
-            </div>`).join('');
-    };
+        const renderCombo = (obj, target, limit) => {
+            const sorted = Object.entries(obj).sort((a, b) => b[1] - a[1]).slice(0, limit);
+            const el = document.getElementById(target);
+            if (!el) return;
+            el.innerHTML = sorted.map(([nums, count]) => `
+                <div class="combo-item">
+                    <div class="combo-nums">${nums.split(',').map(n => `<div class="c-ball" style="background:${getBallColor(parseInt(n))}">${n}</div>`).join('')}</div>
+                    <div class="c-count">${count}회</div>
+                </div>`).join('');
+        };
 
-    // 전체 누적 콤비 (TOP 5)
-    const allCombos = getCombos(cachedHistory);
-    renderCombo(allCombos.p, 'all-combo-2-target', 5);
-    renderCombo(allCombos.t, 'all-combo-3-target', 5);
-
-    // 최근 n회 콤비 (TOP 5)
-    const recentCombos = getCombos(recentData);
-    renderCombo(recentCombos.p, 'combo-2-target', 5); 
-    renderCombo(recentCombos.t, 'combo-3-target', 5);
-}
+        const allCombos    = getCombos(cachedHistory);
+        const recentCombos = getCombos(recentData);
+        renderCombo(allCombos.p,    'all-combo-2-target', 5);
+        renderCombo(allCombos.t,    'all-combo-3-target', 5);
+        renderCombo(recentCombos.p, 'combo-2-target', 5);
+        renderCombo(recentCombos.t, 'combo-3-target', 5);
+    }
 
     async function loadLotto() {
         try {
-            const res = await fetch(`https://lottowrk.khscrr.workers.dev/?action=history`);
+            const res = await fetch('https://lottowrk.khscrr.workers.dev/?action=history');
             cachedHistory = await res.json();
             if (cachedHistory.length > 0) {
                 const latest = cachedHistory[0];
                 winNumbers = [...latest[2], latest[3]];
-                document.getElementById("win-status").innerText = `제 ${latest[0]}회 당첨 번호`;
-                document.getElementById("win-display").innerHTML = latest[2].map(n => `<div class="w-ball" style="background:${getBallColor(n)}">${n}</div>`).join('') + `<div style="margin:0 5px; color:#555; font-weight:bold;">+</div><div class="w-ball" style="background:${getBallColor(latest[3])}">${latest[3]}</div>`;
-                winNumbers.forEach(n => { if(document.getElementById("n"+n)) document.getElementById("n"+n).classList.add("win-hit"); });
+                document.getElementById('win-status').innerText = `제 ${latest[0]}회 당첨 번호`;
+                document.getElementById('win-display').innerHTML = latest[2].map(n => `<div class="w-ball" style="background:${getBallColor(n)}">${n}</div>`).join('') + `<div style="margin:0 5px; color:#555; font-weight:bold;">+</div><div class="w-ball" style="background:${getBallColor(latest[3])}">${latest[3]}</div>`;
+                winNumbers.forEach(n => { if (document.getElementById('n' + n)) document.getElementById('n' + n).classList.add('win-hit'); });
                 const select = document.getElementById('stats-n-range');
                 for (let i = cachedHistory.length; i >= 1; i--) {
                     const opt = document.createElement('option'); opt.value = i; opt.innerText = i;
@@ -377,9 +449,9 @@ function refreshStats(isUserAction = false) {
 
     function initGrid() {
         const g = document.getElementById('grid');
-        for(let i=1; i<=45; i++) {
+        for (let i = 1; i <= 45; i++) {
             const b = document.createElement('button');
-            b.id = 'n'+i; b.className = 'ball s0'; b.style.backgroundColor = getBallColor(i);
+            b.id = 'n' + i; b.className = 'ball s0'; b.style.backgroundColor = getBallColor(i);
             b.innerHTML = `<span class="ball-num">${i}</span><div class="ball-label" id="label-${i}"></div>`;
             b.onclick = () => { states[i] = (states[i] + 1) % 7; renderBall(i); };
             g.appendChild(b);
@@ -396,21 +468,21 @@ function refreshStats(isUserAction = false) {
     function generate() {
         const results = [];
         const fixed = states.map((s, i) => s === 6 ? i : null).filter(v => v);
-        if(fixed.length > 6) { alert("포함 번호는 최대 6개!"); return; }
-        for(let g=0; g<5; g++) {
+        if (fixed.length > 6) { alert('포함 번호는 최대 6개!'); return; }
+        for (let g = 0; g < 5; g++) {
             let picks = [...fixed]; let pool = [];
-            for(let i=1; i<=45; i++) {
-                if(picks.includes(i) || states[i] === 1) continue;
+            for (let i = 1; i <= 45; i++) {
+                if (picks.includes(i) || states[i] === 1) continue;
                 let baseW = states[i] === 0 ? 1.0 : userWeights[states[i]];
-                if (states[i] === 0 && winNumbers.includes(i)) baseW = prevWinWeight; 
+                if (states[i] === 0 && winNumbers.includes(i)) baseW = prevWinWeight;
                 let w = Math.round(baseW * 100);
-                for(let j=0; j<w; j++) pool.push(i);
+                for (let j = 0; j < w; j++) pool.push(i);
             }
-            while(picks.length < 6 && pool.length > 0) {
-                const p = pool[Math.floor(Math.random()*pool.length)];
+            while (picks.length < 6 && pool.length > 0) {
+                const p = pool[Math.floor(Math.random() * pool.length)];
                 picks.push(p); pool = pool.filter(n => n !== p);
             }
-            results.push(picks.sort((a,b)=>a-b));
+            results.push(picks.sort((a, b) => a - b));
         }
         localStorage.setItem('last_lotto_results', JSON.stringify(results));
         displayResults(results);
@@ -419,7 +491,7 @@ function refreshStats(isUserAction = false) {
 
     function displayResults(data) {
         const listDiv = document.getElementById('results-list');
-        const chars = ['#1','#2','#3','#4','#5'];
+        const chars = ['#1', '#2', '#3', '#4', '#5'];
         listDiv.innerHTML = ''; document.getElementById('results-container').style.display = 'flex';
         data.forEach((picks, i) => {
             const row = document.createElement('div'); row.className = 'res-row';
@@ -428,17 +500,17 @@ function refreshStats(isUserAction = false) {
         });
     }
 
-    function loadSavedResults() { const saved = localStorage.getItem('last_lotto_results'); if(saved) displayResults(JSON.parse(saved)); }
-    function resetAll() { if(!confirm("번호판을 초기화하시겠습니까?")) return; for(let i=1; i<=45; i++) { states[i] = 0; renderBall(i); } }
+    function loadSavedResults() { const saved = localStorage.getItem('last_lotto_results'); if (saved) displayResults(JSON.parse(saved)); }
+    function resetAll() { if (!confirm('번호판을 초기화하시겠습니까?')) return; for (let i = 1; i <= 45; i++) { states[i] = 0; renderBall(i); } }
     function toggleStats() { const c = document.getElementById('stats-content'); c.style.maxHeight = c.style.maxHeight === '2500px' ? '0px' : '2500px'; }
-    
+
     function initGuide() {
         const guideGrid = document.getElementById('guide-grid');
         guideGrid.innerHTML = '';
         [0, 1, 2, 3, 4, 5, 6].forEach(i => {
             const wrapper = document.createElement('div');
-            wrapper.style = "display:flex; flex-direction:column; align-items:center;";
-            let innerContent = "";
+            wrapper.style = 'display:flex; flex-direction:column; align-items:center;';
+            let innerContent = '';
             if (i === 0) innerContent = `<span style="font-size:0.6rem; font-weight:900; color:#888;">보통</span>`;
             else if (i === 1) innerContent = `<span style="font-size:0.6rem; font-weight:900; color:#fff;">제외</span>`;
             else if (i === 6) innerContent = `<span style="font-size:0.6rem; font-weight:900; color:#000;">포함</span>`;
@@ -446,23 +518,23 @@ function refreshStats(isUserAction = false) {
             wrapper.innerHTML = `<div class="ball s${i}" style="width:28px; height:28px; display:flex; align-items:center; justify-content:center;">${innerContent}</div>`;
             guideGrid.appendChild(wrapper);
         });
-        guideGrid.style.gridTemplateColumns = "repeat(7, 1fr)";
-        guideGrid.style.gap = "5px"; 
+        guideGrid.style.gridTemplateColumns = 'repeat(7, 1fr)';
+        guideGrid.style.gap = '5px';
     }
 
     function sendKakaoAll() {
         if (!Kakao.isInitialized()) Kakao.init(KAKAO_KEY);
         const rows = document.querySelectorAll('.res-row');
-        let txt = "🍀 로또 행운 번호\n";
-        rows.forEach((row, i) => { 
+        let txt = '🍀 로또 행운 번호\n';
+        rows.forEach(row => {
             const char = row.querySelector('.res-idx').innerText;
             const nums = Array.from(row.querySelectorAll('.res-ball')).map(b => b.innerText).join(', ');
             txt += `\n${char}: ${nums}`;
         });
         Kakao.Share.sendDefault({
-            objectType: 'text', text: txt + "\n\n대박 나세요! ✨",
+            objectType: 'text', text: txt + '\n\n대박 나세요! ✨',
             link: { mobileWebUrl: location.href, webUrl: location.href },
-            buttons: [{ title: '번호 확인', link: { mobileWebUrl: location.href, webUrl: location.href }}]
+            buttons: [{ title: '번호 확인', link: { mobileWebUrl: location.href, webUrl: location.href } }]
         });
     }
 
