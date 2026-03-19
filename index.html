@@ -3,16 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Lotto Matrix v11.5</title>
+    <title>Lotto Matrix v12.0</title>
     <script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.0/kakao.min.js"></script>
     <style>
+        /* CSS 부분은 v11.9와 동일 (생략 없이 전체 포함) */
         :root { --bg: #f4f7f6; --primary: #1a73e8; --danger: #ef5350; --success: #34a853; --gap: 15px; }
         body { font-family: -apple-system, sans-serif; background: var(--bg); margin: 0; padding: 10px; display: flex; justify-content: center; }
         .container { max-width: 480px; width: 100%; display: flex; flex-direction: column; gap: var(--gap); padding-bottom: 20px; }
         .section-box { background: white; padding: 15px; border-radius: 25px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); }
         .standard-grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 6px; width: 100%; }
-        
-        /* 헤더 & 통계 */
         .info-header { background: #202124; padding: 15px; border-radius: 20px; text-align: center; color: white; }
         .win-info-text { font-size: 0.75rem; color: #999; margin-bottom: 8px; font-weight: bold; }
         .win-display { display: flex; justify-content: center; gap: 5px; align-items: center; margin-bottom: 12px; }
@@ -22,45 +21,36 @@
         .h-btn { flex: 1; padding: 12px; border-radius: 12px; font-size: 0.8rem; font-weight: bold; border: none; cursor: pointer; color: white; }
         .btn-stats { background: #444; border: 1px solid #555; }
         .btn-official { background: var(--success); text-decoration: none; display: flex; align-items: center; justify-content: center; }
-
         #stats-content { max-height: 0; overflow: hidden; transition: max-height 0.4s ease-out; background: #2a2b2e; border-radius: 18px; margin-top: 10px; text-align: left; }
         .stats-inner { padding: 15px; }
-        .stats-control { background: #38393d; padding: 10px; border-radius: 12px; margin-bottom: 15px; display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 0.75rem; color: #ccc; }
-        .stats-input { width: 45px; background: #222; border: 1px solid #555; color: #fff; text-align: center; border-radius: 5px; padding: 3px; }
-        .stats-title { font-weight: bold; padding: 5px 0; color: #aaa; border-bottom: 1px solid #444; margin-bottom: 10px; font-size: 0.8rem; }
+        .stats-divider-control { background: #38393d; padding: 12px; border-radius: 12px; margin: 15px 0; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 0.75rem; color: #fff; border: 1px solid #444; }
+        .stats-select { background: #222; border: 1px solid #666; color: #fff; padding: 5px 8px; border-radius: 8px; font-size: 0.75rem; outline: none; max-width: 120px; }
+        .stats-title { font-weight: bold; padding: 5px 0; color: #4da3ff; margin-bottom: 10px; font-size: 0.85rem; display: flex; align-items: center; gap: 5px; }
+        .stats-title::before { content: "●"; font-size: 0.6rem; }
         .stats-row { margin-bottom: 20px; }
         .stats-label { font-size: 0.7rem; color: #888; margin-bottom: 8px; display: block; }
         .stats-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
         .stats-unit { display: flex; flex-direction: column; align-items: center; gap: 4px; }
         .s-ball { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.85rem; color: white; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
         .s-count { font-size: 0.6rem; color: #34a853; font-weight: bold; }
-
-        /* 가중치 설정 */
-        .collapsible { background: #f8f9fa; border-radius: 15px; margin-top: 10px; overflow: hidden; border: 1px solid #eee; }
-        .collapsible-header { padding: 10px 15px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; background: #f1f3f4; font-size: 0.8rem; font-weight: bold; }
-        .collapsible-content { max-height: 0; overflow: hidden; transition: max-height 0.35s ease; background: #fff; }
-        .desc-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 15px; border-bottom: 1px solid rgba(0,0,0,0.03); font-size: 0.8rem; }
-        .weight-input { width: 60px; padding: 6px; border: 1px solid #ddd; border-radius: 8px; text-align: right; font-weight: bold; color: var(--primary); }
-
-        /* 번호판 & 이중 화살표 아이콘 */
         .ball, .guide-ball { aspect-ratio: 1; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: 0.2s; position: relative; width: 100%; overflow: hidden; background-color: #eee; cursor: pointer; border: none; }
         .ball-num { position: absolute; font-weight: 800; font-size: 0.9rem; z-index: 1; color: rgba(0,0,0,0.8); transition: 0.2s; }
         .ball-label { position: relative; z-index: 2; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
         .icon-svg { width: 65%; height: 65%; fill: none; stroke: currentColor; stroke-width: 3.5; stroke-linecap: round; stroke-linejoin: round; }
-        .txt-label { font-size: 0.6rem; font-weight: 900; transform: scaleX(0.8); }
-        
+        .txt-label { font-size: 0.6rem; font-weight: 900; transform: scaleX(0.8); white-space: nowrap; }
         .ball.win-hit { border: 2.5px solid #ff9900 !important; box-shadow: 0 0 10px rgba(255, 204, 0, 0.5); }
         .ball:not(.s0) .ball-num { opacity: 0.15; }
-
-        /* 상태별 스타일 복구 */
         .s1 { background-color: #333 !important; color: #fff; }
         .s2 { background-color: #cfd8dc !important; color: #444; } 
         .s3 { background-color: #eceff1 !important; color: #666; }
         .s4 { background-color: #69c8f2 !important; border: 1.5px solid #555; color: #fff; }
         .s5 { background-color: #fbc400 !important; border: 2px solid #000; color: #fff; }
         .s6 { background-color: #ef5350 !important; border: 2.5px solid #ef5350; color: #fff; }
-
-        /* 하단 및 결과 */
+        .collapsible { background: #f8f9fa; border-radius: 15px; margin-top: 10px; overflow: hidden; border: 1px solid #eee; }
+        .collapsible-header { padding: 10px 15px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; background: #f1f3f4; font-size: 0.8rem; font-weight: bold; }
+        .collapsible-content { max-height: 0; overflow: hidden; transition: max-height 0.35s ease; background: #fff; }
+        .desc-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 15px; border-bottom: 1px solid rgba(0,0,0,0.03); font-size: 0.8rem; }
+        .weight-input { width: 60px; padding: 6px; border: 1px solid #ddd; border-radius: 8px; text-align: right; font-weight: bold; color: var(--primary); }
         #results-container { display: none; flex-direction: column; gap: var(--gap); }
         #results-list { padding: 20px 10px; background: #fffbe6; border-radius: 20px; border: 1px dashed #ffd666; display: flex; flex-direction: column; gap: 10px; }
         .res-row { display: flex; align-items: center; justify-content: center; width: 100%; }
@@ -83,13 +73,19 @@
             <button class="h-btn btn-stats" onclick="toggleStats()">📊 통계 데이터 분석</button>
             <a href="https://m.dhlottery.co.kr/lt645/result" target="_blank" class="h-btn btn-official">🎯 결과 확인</a>
         </div>
+        
         <div id="stats-content">
             <div class="stats-inner">
-                <div class="stats-control">
-                    최근 <input type="number" id="stats-n-range" class="stats-input" value="100" onchange="refreshStats()"> 회차 / 
-                    보너스 <input type="checkbox" id="stats-bonus-check" checked onchange="refreshStats()">
+                <div id="stats-all-target"></div>
+                <div class="stats-divider-control">
+                    <span>최근</span>
+                    <select id="stats-n-range" class="stats-select" onchange="refreshStats(true)"></select>
+                    <span>회 분석</span>
+                    <label style="margin-left:8px; display:flex; align-items:center; gap:4px; cursor:pointer;">
+                        <input type="checkbox" id="stats-bonus-check" checked onchange="refreshStats(true)"> 보너스 포함
+                    </label>
                 </div>
-                <div id="stats-target"></div>
+                <div id="stats-recent-target"></div>
             </div>
         </div>
     </div>
@@ -118,30 +114,29 @@
              <iframe src="https://ads-partners.coupang.com/widgets.html?id=971378&template=carousel&trackingCode=AF6324812&width=320&height=100" width="320" height="100" frameborder="0" scrolling="no" referrerpolicy="unsafe-url"></iframe>
         </div>
     </div>
-    
     <div class="footer-legal">
         <div style="color:#bbb; margin-bottom:5px;">이 포스팅은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.</div>
-        본 서비스는 공공 데이터 기반 통계 도구이며 당첨을 보장하지 않습니다. 로또 구매의 책임은 본인에게 있습니다.
+        본 서비스는 공공 데이터 기반 통계 도구이며 당첨을 보장하지 않습니다.
     </div>
 </div>
 
 <script>
     const KAKAO_KEY = 'f1f225756190be892980478becc91d13';
+    const DEFAULT_RANGE = 52;
     let userWeights = [1.0, 0, 0.1, 0.5, 2.0, 10.0, 10000]; 
     let lastWinWeight = 1.0; 
     const states = Array(46).fill(0);
     let winNumbers = []; 
     let cachedHistory = [];
 
-    // [아이콘 생성 로직 복구]
     function getIcon(state) {
         const svg = `<svg class="icon-svg" viewBox="0 0 24 24">`;
         switch(state) {
             case 1: return `<span class="txt-label">제외</span>`;
-            case 2: return svg + `<path d="M7 7l5 5 5-5M7 14l5 5 5-5"/></svg>`; // 이중 하향
-            case 3: return svg + `<path d="M7 10l5 5 5-5"/></svg>`; // 하향
-            case 4: return svg + `<path d="M7 14l5-5 5 5"/></svg>`; // 상향
-            case 5: return svg + `<path d="M7 10l5-5 5 5M7 17l5-5 5 5"/></svg>`; // 이중 상향
+            case 2: return svg + `<path d="M7 7l5 5 5-5M7 14l5 5 5-5"/></svg>`; 
+            case 3: return svg + `<path d="M7 10l5 5 5-5"/></svg>`; 
+            case 4: return svg + `<path d="M7 14l5-5 5 5"/></svg>`; 
+            case 5: return svg + `<path d="M7 10l5-5 5 5M7 17l5-5 5 5"/></svg>`; 
             case 6: return `<span class="txt-label">포함</span>`;
             default: return "";
         }
@@ -153,11 +148,17 @@
         return '#b0d840';
     }
 
-    function refreshStats() {
+    // [v12.0 스크롤 방지 로직]
+    function refreshStats(isUserAction = false) {
         if(!cachedHistory.length) return;
-        const nRange = parseInt(document.getElementById('stats-n-range').value) || 100;
+        const selectBox = document.getElementById('stats-n-range');
+        const nRange = parseInt(selectBox.value);
         const includeBonus = document.getElementById('stats-bonus-check').checked;
-        const renderBlock = (data, title) => {
+        
+        // 사용자가 직접 변경한 경우 포커스 해제 (이전/다음 버튼 방지 목적)
+        if(isUserAction) selectBox.blur();
+
+        const createBlockHtml = (data, title) => {
             let counts = Array(46).fill(0);
             data.forEach(draw => { draw[2].forEach(n => counts[n]++); if(includeBonus) counts[draw[3]]++; });
             let sorted = []; for(let i=1; i<=45; i++) sorted.push({num: i, count: counts[i]});
@@ -166,7 +167,19 @@
             const makeGrid = (list) => `<div class="stats-grid">${list.map(item => `<div class="stats-unit"><div class="s-ball" style="background:${getBallColor(item.num)}">${item.num}</div><div class="s-count">${item.count}회</div></div>`).join('')}</div>`;
             return `<div class="stats-title">${title}</div><div class="stats-row"><span class="stats-label">🔥 최다 출현 (TOP 6)</span>${makeGrid(most)}</div><div class="stats-row"><span class="stats-label">❄️ 최소 출현 (TOP 6)</span>${makeGrid(least)}</div>`;
         };
-        document.getElementById("stats-target").innerHTML = renderBlock(cachedHistory, `● 전체 회차 통계`) + renderBlock(cachedHistory.slice(0, nRange), `● 최근 ${nRange}회 통계`);
+        document.getElementById("stats-all-target").innerHTML = createBlockHtml(cachedHistory, "전체 회차 누적 통계");
+        document.getElementById("stats-recent-target").innerHTML = createBlockHtml(cachedHistory.slice(0, nRange), `최근 ${nRange}회 집중 분석`);
+    }
+
+    function updateRangeDropdown(total) {
+        const select = document.getElementById('stats-n-range');
+        select.innerHTML = '';
+        for (let i = total; i >= 1; i--) {
+            const opt = document.createElement('option');
+            opt.value = i; opt.innerText = i;
+            if (i === DEFAULT_RANGE) opt.selected = true;
+            select.appendChild(opt);
+        }
     }
 
     async function loadLotto() {
@@ -179,6 +192,7 @@
                 document.getElementById("win-status").innerText = `제 ${latest[0]}회 당첨 번호`;
                 document.getElementById("win-display").innerHTML = latest[2].map(n => `<div class="w-ball" style="background:${getBallColor(n)}">${n}</div>`).join('') + `<div class="w-plus">+</div><div class="w-ball" style="background:${getBallColor(latest[3])}">${latest[3]}</div>`;
                 winNumbers.forEach(n => { if(document.getElementById("n"+n)) document.getElementById("n"+n).classList.add("win-hit"); });
+                updateRangeDropdown(cachedHistory.length);
                 refreshStats();
             }
         } catch (e) { document.getElementById("win-status").innerText = "연결 실패"; }
@@ -209,12 +223,17 @@
             b.innerHTML = `<span class="ball-num">${i}</span><div class="ball-label" id="label-${i}"></div>`;
             b.onclick = () => {
                 states[i] = (states[i] + 1) % 7;
-                b.className = 'ball s' + states[i] + (b.classList.contains('win-hit') ? ' win-hit' : '');
-                b.style.backgroundColor = states[i] === 0 ? getBallColor(i) : '';
-                document.getElementById('label-'+i).innerHTML = getIcon(states[i]);
+                renderBall(i);
             };
             g.appendChild(b);
         }
+    }
+
+    function renderBall(i) {
+        const b = document.getElementById('n'+i);
+        b.className = 'ball s' + states[i] + (b.classList.contains('win-hit') ? ' win-hit' : '');
+        b.style.backgroundColor = states[i] === 0 ? getBallColor(i) : '';
+        document.getElementById('label-'+i).innerHTML = getIcon(states[i]);
     }
 
     function generate() {
@@ -239,11 +258,16 @@
             row.innerHTML = `<div class="res-ball-group">${picks.sort((a,b)=>a-b).map(n => `<div class="res-ball" style="background:${getBallColor(n)}">${n}</div>`).join('')}</div>`;
             listDiv.appendChild(row);
         }
+        // 번호 생성 시에만 스크롤 이동
         window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
     }
 
-    function resetAll() { location.reload(); }
-    function toggleStats() { const c = document.getElementById('stats-content'); c.style.maxHeight = c.style.maxHeight === '800px' ? '0px' : '800px'; }
+    function resetAll() {
+        if(!confirm("번호판의 가중치 선택을 초기화하시겠습니까?\n(생성된 번호 결과는 유지됩니다)")) return;
+        for(let i=1; i<=45; i++) { states[i] = 0; renderBall(i); }
+    }
+
+    function toggleStats() { const c = document.getElementById('stats-content'); c.style.maxHeight = c.style.maxHeight === '1200px' ? '0px' : '1200px'; }
     function toggleAccordion() { const c = document.getElementById('accordion-content'); c.style.maxHeight = c.style.maxHeight === '400px' ? '0px' : '400px'; }
     function updateWeight(i, v) { userWeights[i] = parseFloat(v) || 0; }
     function updateLastWinWeight(v) { lastWinWeight = parseFloat(v) || 0; }
@@ -254,9 +278,9 @@
         let txt = "🍀 로또 행운 번호\n";
         rows.forEach((row, i) => { txt += `\n#${i+1}: ${Array.from(row.querySelectorAll('.res-ball')).map(b => b.innerText).join(', ')}`; });
         Kakao.Share.sendDefault({
-            objectType: 'text', text: txt + "\n\n1등 기원합니다! ✨",
+            objectType: 'text', text: txt + "\n\n대박 나세요! ✨",
             link: { mobileWebUrl: location.href, webUrl: location.href },
-            buttons: [{ title: '번호 확인하기', link: { mobileWebUrl: location.href, webUrl: location.href }}]
+            buttons: [{ title: '번호 확인', link: { mobileWebUrl: location.href, webUrl: location.href }}]
         });
     }
 
