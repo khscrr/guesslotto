@@ -32,66 +32,34 @@
         .s-ball { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.85rem; color: white; }
         .s-count { font-size: 0.6rem; color: #34a853; font-weight: bold; }
 
-        /* ── 그래프 ── */
-        .freq-chart-wrap {
-            margin: 4px 0 16px;
-        }
-        .freq-chart-inner {
+        /* 섹션 헤더 (타이틀 + 체크박스 우측 정렬) */
+        .stats-section-header {
             display: flex;
-            gap: 0;
-            align-items: flex-end;
-            height: 56px;
-            border-bottom: 1px solid rgba(255,255,255,0.12);
-            position: relative;
-            padding: 0 2px;
-        }
-        .freq-bar-col {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
+            justify-content: space-between;
             align-items: center;
-            justify-content: flex-end;
-            height: 100%;
+            margin-bottom: 4px;
         }
-        .freq-bar {
-            width: 70%;
-            border-radius: 2px 2px 0 0;
-            min-height: 2px;
-            transition: height 0.3s ease;
+        .stats-section-header .stats-title {
+            margin-bottom: 0;
         }
-        .freq-x-labels {
+        .bonus-label {
+            font-size: 0.68rem;
+            color: #777;
             display: flex;
-            justify-content: space-between;
-            padding: 4px 2px 0;
-            font-size: 9px;
-            color: #555;
-            line-height: 1;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            white-space: nowrap;
+            flex-shrink: 0;
         }
-        .freq-y-labels {
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            position: absolute;
-            right: 0;
-            top: 0;
-            bottom: 0;
-            align-items: flex-end;
-            pointer-events: none;
-        }
-        .freq-y-label {
-            font-size: 8px;
-            color: #555;
-            line-height: 1;
-            background: #2a2b2e;
-            padding: 0 2px;
-        }
-        /* 가이드라인 */
-        .freq-guideline {
-            position: absolute;
-            left: 0; right: 0;
-            border-top: 1px dashed rgba(255,255,255,0.06);
-            pointer-events: none;
-        }
+        .bonus-label input { cursor: pointer; accent-color: #4da3ff; }
+
+        /* 그래프 */
+        .freq-chart-wrap { margin: 4px 0 16px; }
+        .freq-chart-inner { display: flex; gap: 0; align-items: flex-end; height: 56px; border-bottom: 1px solid rgba(255,255,255,0.12); position: relative; padding: 0 2px; }
+        .freq-bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; }
+        .freq-bar { width: 70%; border-radius: 2px 2px 0 0; min-height: 2px; transition: height 0.3s ease; }
+        .freq-x-labels { display: flex; justify-content: space-between; padding: 4px 2px 0; font-size: 9px; color: #555; line-height: 1; }
 
         /* 조합 분석 */
         .combo-list { display: flex; flex-direction: column; gap: 5px; }
@@ -137,6 +105,10 @@
 <body>
 
 <div class="container">
+
+    <!-- 페이지 제목 -->
+    <div style="font-size: 1.3rem; font-weight: 900; color: #333; padding: 4px 2px 0;">로또번호생성기</div>
+
     <div class="info-header">
         <div id="win-status" class="win-info-text">데이터 로드 중...</div>
         <div id="win-display" class="win-display"></div>
@@ -147,32 +119,51 @@
         
         <div id="stats-content">
             <div class="stats-inner">
+
+                <!-- 전체 회차 통계 -->
+                <div class="stats-section-header">
+                    <div class="stats-title" style="margin-bottom:0;">전체 회차 통계</div>
+                    <label class="bonus-label">
+                        <input type="checkbox" id="stats-bonus-check-all" onchange="refreshStats(true)"> 보너스 번호 포함
+                    </label>
+                </div>
                 <div id="stats-all-target"></div>
+
+                <!-- 전체 회차 빈도 차트 -->
                 <div class="stats-title">전체 회차 빈도</div>
                 <div id="chart-all-area" class="freq-chart-wrap"></div>
-                
-                <div class="stats-title" style="margin-top:15px;">🏆 역대 누적 베스트 (TOP 5)</div>
+
+                <!-- 전체 회차 조합 TOP 5 -->
+                <div class="stats-title" style="margin-top:15px;">🏆 전체 회차 조합 TOP 5</div>
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:6px; margin-bottom: 15px;">
                     <div><span class="stats-label">✌️ 2개 조합</span><div id="all-combo-2-target" class="combo-list"></div></div>
                     <div><span class="stats-label">🤟 3개 조합</span><div id="all-combo-3-target" class="combo-list"></div></div>
                 </div>
 
-                <div style="background:#38393d; padding:10px; border-radius:12px; margin:10px 0; display:flex; align-items:center; justify-content:center; gap:8px; font-size:0.75rem; color:#fff; border:1px solid #444;">
-                    <span>최근</span>
-                    <select id="stats-n-range" onchange="refreshStats(true)" style="background:#222; color:#fff; border:1px solid #666; border-radius:5px;"></select>
-                    <span>회 분석</span>
-                    <label style="margin-left:5px; display:flex; align-items:center; gap:3px;"><input type="checkbox" id="stats-bonus-check" checked onchange="refreshStats(true)"> 보너스</label>
+                <!-- 최근 n회 분석 (타이틀 안에 select 포함) -->
+                <div class="stats-section-header">
+                    <div class="stats-title" style="margin-bottom:0; display:flex; align-items:center; gap:4px;">
+                        최근
+                        <select id="stats-n-range" onchange="refreshStats(true)" style="background:#333; color:#fff; border:1px solid #555; border-radius:6px; font-size:0.78rem; font-weight:800; padding:2px 4px; cursor:pointer;"></select>
+                        회 분석
+                    </div>
+                    <label class="bonus-label">
+                        <input type="checkbox" id="stats-bonus-check-recent" onchange="refreshStats(true)"> 보너스 번호 포함
+                    </label>
                 </div>
-
                 <div id="stats-recent-target"></div>
-                <div class="stats-title">선택 회차 빈도</div>
+
+                <!-- 최근 n회 빈도 차트 -->
+                <div class="stats-title">최근 <span id="recent-n-label-2">n</span>회 빈도</div>
                 <div id="chart-recent-area" class="freq-chart-wrap"></div>
 
-                <div class="stats-title">🔥 최근 베스트 (TOP 5)</div>
+                <!-- 최근 n회 조합 TOP 5 -->
+                <div class="stats-title">🔥 최근 <span id="recent-n-label-3">n</span>회 조합 TOP 5</div>
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:6px;">
                     <div><span class="stats-label">✌️ 2개 조합</span><div id="combo-2-target" class="combo-list"></div></div>
                     <div><span class="stats-label">🤟 3개 조합</span><div id="combo-3-target" class="combo-list"></div></div>
                 </div>
+
             </div>
         </div>
     </div>
@@ -182,7 +173,7 @@
         <hr style="border: 0; border-top: 1px dashed #ddd; margin: 15px 0;">
         <div style="font-size:0.85rem; font-weight:bold; cursor:pointer; display:flex; justify-content:space-between; align-items:center;" onclick="toggleSettings()">
             <span>가중치 및 확률 설정</span>
-            <span id="settings-arrow">▼</span>
+            <span id="settings-arrow" style="font-size:0.75rem; color:#888;">펼치기</span>
         </div>
         <div id="settings-panel" style="display:none; flex-direction:column; margin-top:5px;">
             <div class="setting-row">
@@ -216,14 +207,14 @@
     <div class="section-box"><div id="grid" class="standard-grid"></div></div>
 
     <div class="btn-group" style="display:flex; gap:10px;">
-        <button class="action-btn btn-reset" onclick="resetAll()">🔄 초기화</button>
+        <button class="action-btn btn-reset" onclick="resetAll()">🔄 확률 선택 초기화</button>
         <button class="action-btn btn-generate" onclick="generate()">🎲 번호 생성</button>
     </div>
 
     <div id="results-container">
         <div id="results-list"></div>
         <div class="local-notice">💡 이 번호는 사용자의 장치에만 안전하게 저장됩니다.</div>
-        <button onclick="sendKakaoAll()" style="width:100%; padding:14px; background:#FEE500; border:none; border-radius:15px; font-weight:bold;">카카오톡 공유</button>
+        <button onclick="sendKakaoAll()" style="width:100%; padding:14px; background:#FEE500; border:none; border-radius:15px; font-weight:bold;">카카오톡으로 공유하기</button>
         <div style="text-align: center; margin-top: 15px; display: flex; justify-content: center;">
             <iframe src="https://ads-partners.coupang.com/widgets.html?id=971378&template=carousel&trackingCode=AF6324812&subId=&width=320&height=100&tsource=" width="320" height="100" frameborder="0" scrolling="no" referrerpolicy="unsafe-url" browsingtopics></iframe>
         </div>
@@ -257,8 +248,8 @@
     function toggleSettings() {
         const p = document.getElementById('settings-panel');
         const a = document.getElementById('settings-arrow');
-        if (p.style.display === 'none') { p.style.display = 'flex'; a.innerText = '▲'; } 
-        else { p.style.display = 'none'; a.innerText = '▼'; }
+        if (p.style.display === 'none') { p.style.display = 'flex'; a.innerText = '접기'; } 
+        else { p.style.display = 'none'; a.innerText = '펼치기'; }
     }
 
     function getIcon(state) {
@@ -291,23 +282,18 @@
         const avg  = vals.reduce((a, b) => a + b, 0) / vals.length;
         const range = maxV - minV || 1;
 
-        // 가이드라인 높이 계산 (avg 위치)
         const avgPct = ((avg - minV) / range) * 100;
 
-        // 바 HTML
         const bars = vals.map((c, i) => {
             const num = i + 1;
             const pct = Math.max(2, ((c - minV) / range) * 100);
             const color = getBallColor(num);
-            // 평균 이상이면 살짝 밝게, 이하면 투명도 낮춤
             const opacity = c >= avg ? 1 : 0.55;
             return `<div class="freq-bar-col">
                 <div class="freq-bar" style="height:${pct}%; background:${color}; opacity:${opacity};"></div>
             </div>`;
         }).join('');
 
-        // X축 레이블 (1, 10, 20, 30, 40, 45 위치)
-        // 45개 칸 중 해당 위치 % 계산
         const xTicks = [
             { num: 1,  pct: (0/44)*100 },
             { num: 10, pct: (9/44)*100 },
@@ -323,18 +309,12 @@
 
         container.innerHTML = `
             <div style="position:relative;">
-                <!-- Y축 레이블 (오른쪽 끝에 붙임) -->
                 <div style="position:relative; padding-right:24px;">
-                    <!-- 가이드라인: avg -->
                     <div style="position:absolute; bottom:calc(${avgPct}%); left:0; right:24px;
                                 border-top:1px dashed rgba(255,255,255,0.15); z-index:0; pointer-events:none;"></div>
-
-                    <!-- 바 컨테이너 -->
                     <div class="freq-chart-inner" style="position:relative; z-index:1;">
                         ${bars}
                     </div>
-
-                    <!-- Y 레이블: max, avg, min -->
                     <div style="position:absolute; top:0; right:0; bottom:0; width:22px;
                                 display:flex; flex-direction:column; justify-content:space-between;
                                 align-items:flex-end; pointer-events:none; padding:0 0 0 2px;">
@@ -344,8 +324,6 @@
                         <span style="font-size:8px; color:#666; line-height:1;">${minV}</span>
                     </div>
                 </div>
-
-                <!-- X축 레이블 -->
                 <div style="position:relative; height:14px; margin-top:3px; padding-right:24px;">
                     <div style="position:relative; height:100%; font-size:9px; color:#555;">
                         ${xLabelHtml}
@@ -359,10 +337,16 @@
     function refreshStats(isUserAction = false) {
         if (!cachedHistory.length) return;
         const nRange = parseInt(document.getElementById('stats-n-range').value);
-        const includeBonus = document.getElementById('stats-bonus-check').checked;
+        const includeBonusAll    = document.getElementById('stats-bonus-check-all').checked;
+        const includeBonusRecent = document.getElementById('stats-bonus-check-recent').checked;
         if (isUserAction) document.getElementById('stats-n-range').blur();
 
-        const getCounts = (data) => {
+        // n 레이블 업데이트
+        ['recent-n-label-2','recent-n-label-3'].forEach(function(id){
+            var el = document.getElementById(id); if(el) el.innerText = nRange;
+        });
+
+        const getCounts = (data, includeBonus) => {
             let counts = Array(46).fill(0);
             data.forEach(draw => {
                 draw[2].forEach(n => counts[n]++);
@@ -371,27 +355,26 @@
             return counts;
         };
 
-        const createBlockHtml = (data, title) => {
-            const counts = getCounts(data);
+        const createBlockHtml = (counts) => {
             let sorted = [];
             for (let i = 1; i <= 45; i++) sorted.push({ num: i, count: counts[i] });
             const makeGrid = (list) => `<div class="stats-grid">${list.map(item => `<div class="stats-unit"><div class="s-ball" style="background:${getBallColor(item.num)}">${item.num}</div><div class="s-count">${item.count}회</div></div>`).join('')}</div>`;
             const most  = [...sorted].sort((a, b) => b.count - a.count).slice(0, 6);
             const least = [...sorted].sort((a, b) => a.count - b.count).slice(0, 6);
-            return `<div class="stats-title">${title}</div><div class="stats-row"><span class="stats-label">🔥 최다</span>${makeGrid(most)}</div><div class="stats-row"><span class="stats-label">❄️ 최소</span>${makeGrid(least)}</div>`;
+            return `<div class="stats-row"><span class="stats-label">🔥 최다</span>${makeGrid(most)}</div><div class="stats-row"><span class="stats-label">❄️ 최소</span>${makeGrid(least)}</div>`;
         };
 
-        // 텍스트 통계
-        document.getElementById('stats-all-target').innerHTML    = createBlockHtml(cachedHistory, '전체 누적 통계');
-        const recentData = cachedHistory.slice(0, nRange);
-        document.getElementById('stats-recent-target').innerHTML = createBlockHtml(recentData, `최근 ${nRange}회 분석`);
+        const recentData   = cachedHistory.slice(0, nRange);
+        const allCounts    = getCounts(cachedHistory, includeBonusAll);
+        const recentCounts = getCounts(recentData,    includeBonusRecent);
 
-        // 그래프
-        renderFreqChart('chart-all-area',    getCounts(cachedHistory));
-        renderFreqChart('chart-recent-area', getCounts(recentData));
+        document.getElementById('stats-all-target').innerHTML    = createBlockHtml(allCounts);
+        document.getElementById('stats-recent-target').innerHTML = createBlockHtml(recentCounts);
 
-        // 조합
-        const getCombos = (data) => {
+        renderFreqChart('chart-all-area',    allCounts);
+        renderFreqChart('chart-recent-area', recentCounts);
+
+        const getCombos = (data, includeBonus) => {
             let p = {}, t = {};
             data.forEach(draw => {
                 const nums = [...draw[2], includeBonus ? draw[3] : null].filter(v => v).sort((a, b) => a - b);
@@ -418,8 +401,8 @@
                 </div>`).join('');
         };
 
-        const allCombos    = getCombos(cachedHistory);
-        const recentCombos = getCombos(recentData);
+        const allCombos    = getCombos(cachedHistory, includeBonusAll);
+        const recentCombos = getCombos(recentData,    includeBonusRecent);
         renderCombo(allCombos.p,    'all-combo-2-target', 5);
         renderCombo(allCombos.t,    'all-combo-3-target', 5);
         renderCombo(recentCombos.p, 'combo-2-target', 5);
